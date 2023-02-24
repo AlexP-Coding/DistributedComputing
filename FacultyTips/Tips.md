@@ -16,3 +16,11 @@
 
 ### 5 - Priority
 - The task manager has a priority functionality that can check and compare priority by itself, without need for the priority queue
+
+### 6 - Compilation
+- Do not forget the makefile (optimization -O3), one for each iteration
+- File name should be tsp.c
+- Executable name must be tsp
+
+### 7 - Submission
+- If we made improvements to the serial version post-delivery, we may re-submit it with the OpenMP version (if so, write the changes in the report)
