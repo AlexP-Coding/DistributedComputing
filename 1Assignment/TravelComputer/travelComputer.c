@@ -44,6 +44,7 @@ int checkFileConsistency(FILE *fp)
     return 0;
 }
 
+//gets the number of lines from a file
 int getFileNumberRows(FILE *fp)
 {
     int num_rows=0;
