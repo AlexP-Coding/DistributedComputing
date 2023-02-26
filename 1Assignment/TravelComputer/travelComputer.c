@@ -2,6 +2,10 @@
 #include<omp.h>
 
 #define MAX_LINE_LENGTH 10
+#define NUM_COLLUMNS 3
+int NUM_ROWS;
+int NUM_CITIES;
+
 int **matrix;
 
 
@@ -9,7 +13,7 @@ int **matrix;
 typedef struct
 {
 	unsigned short originCity;
-	unsigned short destCity;
+        unsigned short destCity;
 	unsigned short cost;
 } travelCost;
 
@@ -45,7 +49,7 @@ int checkFileConsistency(FILE *fp)
 }
 
 //gets the number of lines from a file
-int getFileNumberRows(FILE *fp)
+void getFileNumberRows(FILE *fp)
 {
     int num_rows=0;
         char ch;
@@ -54,15 +58,15 @@ int getFileNumberRows(FILE *fp)
             num_rows++;
         }
     }
-    return num_rows;
+    NUM_ROWS = num_rows;
 }
 
 //prints the matrix
-void printMatrix(int num_rows)
+void printMatrix()
 {
     printf("\n");
-    for (int i = 0; i < num_rows; i++) {
-        for (int j = 0; j < 3; j++) {
+    for (int i = 0; i < NUM_ROWS; i++) {
+        for (int j = 0; j < NUM_COLLUMNS; j++) {
             printf("%d ", matrix[i][j]);
         }
         printf("\n");
@@ -79,24 +83,30 @@ void freeMatrix(int num_rows)
 }
 
 //creates the matrix based on of the input file
-void createMatrix(FILE *fp, int num_rows)
+void createMatrix(FILE *fp)
 {
-    matrix = (int **)malloc(num_rows * sizeof(int *));
-    for (int i = 0; i < num_rows; i++) {
-        matrix[i] = (int *)malloc(num_rows * sizeof(int));
+    /* Allocates memory for the matrix */
+    matrix = (int **)malloc(NUM_ROWS * sizeof(int *));
+    for (int i = 0; i < NUM_ROWS; i++) {
+        matrix[i] = (int *)malloc(NUM_ROWS * sizeof(int));
     }
 
     char line[MAX_LINE_LENGTH]; 
     char *token;
     int y = 0;
-    fgets(line, MAX_LINE_LENGTH, fp); //reads and discards the first line
+
+    /* Gets the number of cities and number of roads*/
+    fgets(line, MAX_LINE_LENGTH, fp); 
+    NUM_CITIES = atoi(strtok(line, " "));
+    
+    /* Fills the matrix */
     while (fgets(line, MAX_LINE_LENGTH, fp) != NULL) 
     {
         // printf("%s", line);
         token = strtok(line, " ");
         int x = 0;
         while (token != NULL) {
-            // printf(" || TOKEN : %d\n", atoi(token));
+            // printf("`TOKEN : %d\n", atoi(token));
             matrix[y][x] = atoi(token);
             token = strtok(NULL, " ");
             x++;
@@ -106,10 +116,9 @@ void createMatrix(FILE *fp, int num_rows)
 }
 
 
-//reads the citys and distances between them from text file
+//reads the cities and distances between them from text file
 void getMapData(char *filename)
 {
-    int num_rows = 0;
     FILE* fp = fopen(filename, "r");
     
     if (checkFileConsistency(fp) == 1) {
@@ -117,20 +126,131 @@ void getMapData(char *filename)
         return;
     }
     
-    num_rows = getFileNumberRows(fp);
+    getFileNumberRows(fp);
     rewind(fp);
 
-    createMatrix(fp, num_rows);
+    createMatrix(fp);
     
     fclose(fp);
 
-    printMatrix(num_rows);
+    printMatrix();
+}
+
+int* remove_element(int* arr, int size, int pos) {
+    // Check if pos is within bounds
+    if (pos < 0 || pos >= size) {
+        return arr; // Return the original array if pos is invalid
+    }
+
+    // Allocate memory for the new array
+    int* new_arr = (int*) malloc((size - 1) * sizeof(int));
+
+    // Copy the elements from arr to new_arr, except for the one at pos
+    int j = 0; // Index for the new array
+    for (int i = 0; i < size; i++) {
+        if (i != pos) {
+            new_arr[j] = arr[i];
+            j++;
+        }
+    }
+
+    // Free the memory used by the original array
+    free(arr);
+
+    // Return the new array
+    return new_arr;
+}
+
+int* add_element(int* arr, int size, int element) {
+    // Allocate memory for the new array
+    int* new_arr = (int*) malloc((size + 1) * sizeof(int));
+
+    // Copy the elements from arr to new_arr
+    for (int i = 0; i < size; i++) {
+        new_arr[i] = arr[i];
+    }
+
+    // Add the new element to the end of the new array
+    new_arr[size] = element;
+
+    // Free the memory used by the original array
+    free(arr);
+
+    // Return the new array
+    return new_arr;
+}
+
+
+int getMinCostSum(int cityIndex)
+{
+    int min1 = 1000000000;
+    int min2 = 1000000000;
+
+    int *arr = NULL;
+    int arr_size=0;
+
+    /* creates an array with all the cost associated to the argumnent cityIndex*/
+    for ( int i = 0 ; i < NUM_ROWS ; i++ )
+    {
+        // printf("BBBBBB %d : %d ||| ", matrix[i][0],  matrix[i][1]);
+        if ( matrix[i][0] == cityIndex || matrix[i][1] == cityIndex )
+        {
+            // printf("CCCCCCCCC %d : %d ||| ", matrix[i][0],  matrix[i][1]);
+            int cost = matrix[i][2];   
+            
+            arr = add_element(arr, arr_size, cost);
+            arr_size++;
+        }
+    }
+
+    /*  gets both the smallest member in the array and its position*/
+    min1 = arr[0];
+    int pos = 0;
+    for (int i = 1; i <  arr_size ; i++)
+    {
+        if ( arr[i] < min1 )
+        {
+            min1 = arr[i];
+            pos=i;
+        }
+    }
+    arr = remove_element(arr, arr_size, pos);
+    arr_size = arr_size - 1;
+    
+    /* repeat the abovce*/
+    min2 = arr[0];
+    for (int i = 0; i <  arr_size ; i++)
+    {
+        if ( arr[i] < min2 )
+        {
+            min2 = arr[i];
+            pos = i;
+        }
+    }
+    arr = remove_element(arr, arr_size, pos);
+    arr_size = arr_size - 1;
+
+    // printf("AAAA %d -- %d\n", min1, min2);
+
+    free(arr);
+    return ( min1 + min2 );
+}
+
+double computeLowerBound()
+{
+    for ( int i = 0 ; i < NUM_CITIES ; i++ )
+    {
+        printf("City %d -> %d\n", i, getMinCostSum(i));
+    }
+
+    return 0.0;
 }
 
 // core function
 void tsp(char *filename)
 {
     getMapData(filename);
+    computeLowerBound();
 }
 
 //main
