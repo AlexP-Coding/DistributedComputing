@@ -209,7 +209,6 @@ int getHighestTruncatedEdge(int truncateValue, int cityIndex)
     {
         if ( matrix[i][0] == cityIndex || matrix[i][1] == cityIndex )
         {
-            // printf("b   %d - %d - %d         \n", i, matrix[i][2] ,matrix[i][2] != getHighestCostEdge(cityIndex));
             if ( matrix[i][2] > edge && matrix[i][2] <= truncateValue && matrix[i][2] != getHighestCostEdge(cityIndex))
             {
                 edge = matrix[i][2];
@@ -230,32 +229,42 @@ void tsp(char *filename, int maxLowerBound)
 {
     getMapData(filename);
 
-    // int lowerBound = computeInitialLowerBound();
-    // printf("Initial Lower Bound -> %d", lowerBound);
-    // if ( lowerBound > maxLowerBound ) { return; }
+    int lowerBound = computeInitialLowerBound();
+    printf("Initial Lower Bound -> %d", lowerBound);
+    if ( lowerBound > maxLowerBound ) { return; }
     
-    // priority_queue_t *cities = queue_create(compare_elements);
+    priority_queue_t *cities = queue_create(compare_elements);
     
-    // Tour firstTour = createTour(NUM_CITIES, 0, bestLowerBound, 0);
+    Tour firstTour = createTour(NUM_CITIES, 0, bestLowerBound, 0);
 
-    // queue_push(cities, &firstTour);
-    // while ( cities->size > 0 )
-    // {
-    //     queue_pop(cities);
-    //     printf("Tour:\n");
-    //     // printf("  cost: %d\n", cities[0]);
-    //     Tour* teste = (Tour*) cities -> buffer[0];
-    //     printf("  bound: %d\n", teste->bound);
-    //     free(teste);
-    // // printf("  currCity: %d\n", cities[0]->currCity);
-    // }
+    queue_push(cities, &firstTour);
+    while ( cities->size > 0 )
+    {
+        Tour* teste = queue_pop(cities);
 
-    int cityIndex = 3;
-    printf("Highest Cost Edge : %d\n", getHighestCostEdge(cityIndex));
-    printf("Truncated Value : %d\n", getHighestTruncatedEdge(3,cityIndex));
-    printf("Truncated Value : %d\n", getHighestTruncatedEdge(4,cityIndex));
-    printf("Truncated Value : %d\n", getHighestTruncatedEdge(13,cityIndex));
-    
+        //  if (Bound > BestTourCost)
+        //      return BestTour, BestTourCost
+
+        //  If (Length == N)
+        //       If ( Cost+Distances(Node, 0) < BestTourCost ) #Distances?????????
+        //          BestTour = BestTour.append(0)           #O que e q o zero simboliza????????????
+        //          BestTourCost = Cost + Distances(Node, 0)
+
+        //  Else
+        //      for ( remaining unviseted nodes)
+        //          updateLowerBound
+        //          if ( newBound > BestTourCost )
+        //              continue
+        //          newTour = newTour + new visited City
+        //          newCost = cost + Distances(Nodes,v)
+        //          Queue.add( new visited city)
+
+        //  return BestTour, BetterTourCost
+        free(teste);
+
+
+    }
+
 }
 
 //main

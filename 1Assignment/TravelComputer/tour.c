@@ -2,14 +2,14 @@
 
 
 // Creates and returs a Tour
-Tour createTour(int numCities, int cost, int lowerBound, int currCity)
+Tour createTour(int numCities, int cost, int Bound, int currCity)
 {
     Tour tour;
     tour.tour = (unsigned short*) malloc(sizeof(unsigned short) * numCities);
     tour.cost = cost;
-    tour.bound = lowerBound;
+    tour.bound = Bound;
     tour.currCity = currCity;
-    
+
     return tour;
 }
 
