@@ -62,6 +62,23 @@ void freeMatrix(int num_rows)
     free(matrix);
 }
 
+// Returns the highest cost edge from a city
+int getHighestCostEdge(int cityIndex)
+{
+    int max = 0;
+    for ( int i = 0 ; i < NUM_ROWS ; i++ )
+    {
+        if ( matrix[i][0] == cityIndex || matrix[i][1] == cityIndex )
+        {
+            if ( matrix[i][2] > max )
+            {
+                max = matrix[i][2];
+            }
+        }
+    }
+    return max;
+}
+
 //creates the matrix based on of the input file
 void createMatrix(FILE *fp)
 {
@@ -178,17 +195,34 @@ double computeInitialLowerBound()
     int lowerBound = 0;
     for ( int i = 0 ; i < NUM_CITIES ; i++ )
     {
-        lowerBound = lowerBound + getMinCostSum(i)/2;
+        lowerBound = lowerBound + getMinCostSum(i);
     }
     bestLowerBound = lowerBound;
-    return lowerBound;
+    return (lowerBound / 2) ;
 }
 
-double recomputeLowerBound(double oldLowerBound, int roadCost, int cityIndex)
+// Identifies and returns the lowest highest edge, if its lower than the argument 'truncateValue'
+int getHighestTruncatedEdge(int truncateValue, int cityIndex)
 {
-    double newLowerBound = 0.0;
+    int edge = -1;
+    for ( int i = 0 ; i < NUM_ROWS ; i++ )
+    {
+        if ( matrix[i][0] == cityIndex || matrix[i][1] == cityIndex )
+        {
+            // printf("b   %d - %d - %d         \n", i, matrix[i][2] ,matrix[i][2] != getHighestCostEdge(cityIndex));
+            if ( matrix[i][2] > edge && matrix[i][2] <= truncateValue && matrix[i][2] != getHighestCostEdge(cityIndex))
+            {
+                edge = matrix[i][2];
+            }
+        }
+    }
+    return edge;
+}
 
-    return ( oldLowerBound + roadCost - getMinCostSum(cityIndex)); 
+// Recomputes the LowerBound to new Tour
+double recomputeLowerBound(double oldLowerBound, int roadCost, int oldCityIndex, int newCityIndex)
+{
+    return ( oldLowerBound + roadCost - (getHighestTruncatedEdge(roadCost, oldCityIndex) + getHighestTruncatedEdge(roadCost, newCityIndex)) / 2); 
 }
 
 // core function
@@ -196,29 +230,31 @@ void tsp(char *filename, int maxLowerBound)
 {
     getMapData(filename);
 
-    int lowerBound = computeInitialLowerBound();
-    printf("Initial Lower Bound -> %d", lowerBound);
-    if ( lowerBound > maxLowerBound ) { return; }
+    // int lowerBound = computeInitialLowerBound();
+    // printf("Initial Lower Bound -> %d", lowerBound);
+    // if ( lowerBound > maxLowerBound ) { return; }
     
-    priority_queue_t *cities = queue_create(compare_elements);
+    // priority_queue_t *cities = queue_create(compare_elements);
     
-    Tour firstTour;
-    firstTour.tour = (unsigned short*) malloc(sizeof(unsigned short) * NUM_CITIES);
-    firstTour.cost = 0;
-    firstTour.bound = bestLowerBound;
-    firstTour.currCity = 0;
+    // Tour firstTour = createTour(NUM_CITIES, 0, bestLowerBound, 0);
 
-    queue_push(cities, &firstTour);
-    while ( cities->size > 0 )
-    {
-        queue_pop(cities);
-        printf("Tour:\n");
-        // printf("  cost: %d\n", cities[0]);
-        Tour* teste = (Tour*) cities -> buffer[0];
-        printf("  bound: %d\n", teste->bound);
-        free(teste);
-    // printf("  currCity: %d\n", cities[0]->currCity);
-    }
+    // queue_push(cities, &firstTour);
+    // while ( cities->size > 0 )
+    // {
+    //     queue_pop(cities);
+    //     printf("Tour:\n");
+    //     // printf("  cost: %d\n", cities[0]);
+    //     Tour* teste = (Tour*) cities -> buffer[0];
+    //     printf("  bound: %d\n", teste->bound);
+    //     free(teste);
+    // // printf("  currCity: %d\n", cities[0]->currCity);
+    // }
+
+    int cityIndex = 3;
+    printf("Highest Cost Edge : %d\n", getHighestCostEdge(cityIndex));
+    printf("Truncated Value : %d\n", getHighestTruncatedEdge(3,cityIndex));
+    printf("Truncated Value : %d\n", getHighestTruncatedEdge(4,cityIndex));
+    printf("Truncated Value : %d\n", getHighestTruncatedEdge(13,cityIndex));
     
 }
 
