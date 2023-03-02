@@ -7,8 +7,10 @@ typedef struct city_details {
 
 void raise_error(char *msg);
 
-city_details parse_cities_file(char* cities_file_path);
+city_details* parse_cities_file(char* cities_file_path);
+
+void free_city_info(city_details *city_info);
 
 double** init_dist_matrix(int nr_cities);
 
-void print_city_info(city_details city_info);
+void print_city_info(city_details* city_info);
