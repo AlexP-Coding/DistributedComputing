@@ -63,6 +63,24 @@ void freeMatrix(int num_rows)
     free(matrix);
 }
 
+// Returns the Road Cost between two Cities
+short getRoadCost(short oldCityIndex, short newCityIndex)
+{
+    short cost;
+    for ( short i = 0 ; i < NUM_ROWS ; i++ )
+    {
+        if ( matrix[i][0] == oldCityIndex && matrix[i][1] == newCityIndex )
+        {
+            cost = matrix[i][2];
+        }
+        if ( matrix[i][0] == newCityIndex && matrix[i][1] == oldCityIndex )
+        {
+            cost = matrix[i][2];
+        }
+    }
+    return cost;
+}
+
 // Returns the highest cost edge from a city
 int getHighestCostEdge(short cityIndex)
 {
@@ -114,6 +132,7 @@ void createMatrix(FILE *fp)
     }
 }
 
+// Returns the neighbours of a city
 short* getNeighbours(int index) {
     short* neighbours = malloc(sizeof(int) * NUM_CITIES-1);
     int count = 0;
@@ -138,7 +157,7 @@ short* getNeighbours(int index) {
     return neighbours;
 }
 
-
+// Returns whether or not a city has been traversed or not based on the argument traversedCities
 short hasBeenTraversed(short cityIndex, short *traversedCities, short pathSize)
 {
     int result = 0;
@@ -153,6 +172,7 @@ short hasBeenTraversed(short cityIndex, short *traversedCities, short pathSize)
     return result;
 }
 
+// Returns the neighbours of a city that have not been traversed yet
 short* getUnvisitedNeighbourNodes(short cityIndex, short *traversedCities, short pathSize)
 {
     short remainingNumberOfNeighbours = NUM_CITIES - pathSize;
@@ -293,16 +313,6 @@ void tsp(char *filename, int maxLowerBound)
 {
     getMapData(filename);
 
-    // for ( int i = 0 ; i < NUM_CITIES ; i++ )
-    // {
-    short temp[] = {0,3};
-    short *aaa = getUnvisitedNeighbourNodes(3, temp, 2);
-
-    for (int i = 0 ; i < 4 ; i++ )
-    {
-        printf("%d ", aaa[i]);
-    }
-    // }
     // int lowerBound = computeInitialLowerBound();
     // printf("Initial Lower Bound -> %d", lowerBound);
     // if ( lowerBound > maxLowerBound ) { return; }
@@ -314,7 +324,7 @@ void tsp(char *filename, int maxLowerBound)
     // queue_push(cities, &firstTour);
     // while ( cities->size > 0 )
     // {
-    //     Tour* currCity = queue_pop(cities);
+    //     Tour* currTour = queue_pop(cities);
 
     //     //  if (Bound > BestTourCost)
     //     //      return BestTour, BestTourCost
@@ -325,14 +335,16 @@ void tsp(char *filename, int maxLowerBound)
     //     //          BestTourCost = Cost + Distances(Node, 0)
 
     //     //  Else
-    //          for ( remaining unviseted nodes)
+    //         short *unvisitedNeighbours = getUnvisitedNeighbourNodes(currTour->currCity, currTour->tour, currTour->size);
+    //         for ( short i = 0 ; i < (NUM_CITIES - currTour->size) ; i++ ){
     //             //  updateLowerBound
-    //             currCity->bound = recomputeLowerBound(currCity->bound, /*funcaoDeRoadCost*/, currCity->currCity, /* funcaoDeNovaCidade */ );
-    //              if ( newBound > BestTourCost )
-    //                  continue
-    //              newTour = newTour + new visited City
-    //              newCost = cost + Distances(Nodes,v)
-    //              Queue.add( new visited city)
+    //             currTour->bound = recomputeLowerBound(currTour->bound, getRoadCost(currTour->currCity, unvisitedNeighbours[i]), currTour->currCity, unvisitedNeighbours[i]);
+    //             //  if ( newBound > BestTourCost )
+    //             //      continue
+    //             //  newTour = newTour + new visited City
+    //             //  newCost = cost + Distances(Nodes,v)
+    //             //  Queue.add( new visited city)
+    //         }
 
     //     //  return BestTour, BetterTourCost
     //     // free(currCity);
