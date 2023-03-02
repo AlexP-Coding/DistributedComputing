@@ -9,6 +9,7 @@ int NUM_ROWS;
 int NUM_CITIES;
 
 int **matrix;
+short *possibleCities;
 double bestLowerBound;
 
 // prints the arguments received
@@ -63,7 +64,7 @@ void freeMatrix(int num_rows)
 }
 
 // Returns the highest cost edge from a city
-int getHighestCostEdge(int cityIndex)
+int getHighestCostEdge(short cityIndex)
 {
     int max = 0;
     for ( int i = 0 ; i < NUM_ROWS ; i++ )
@@ -87,6 +88,7 @@ void createMatrix(FILE *fp)
     for (int i = 0; i < NUM_ROWS; i++) {
         matrix[i] = (int *)malloc(NUM_ROWS * sizeof(int));
     }
+
 
     char line[MAX_LINE_LENGTH]; 
     char *token;
@@ -112,6 +114,63 @@ void createMatrix(FILE *fp)
     }
 }
 
+short* getNeighbours(int index) {
+    short* neighbours = malloc(sizeof(int) * NUM_CITIES-1);
+    int count = 0;
+
+    // Fills the array with -1
+    for (int i = 0; i < NUM_CITIES; i++) { neighbours[i] = -1;}
+
+    // Loop through each row in the matrix
+    for (int i = 0; i < NUM_ROWS; i++) {
+        // If the first element matches the index, add the second element to matches
+        if (matrix[i][0] == index) {
+            neighbours[count] = matrix[i][1];
+            count++;
+        }
+        // If the second element matches the index, add the first element to matches
+        else if (matrix[i][1] == index) {
+            neighbours[count] = matrix[i][0];
+            count++;
+        }
+    }
+
+    return neighbours;
+}
+
+
+short hasBeenTraversed(short cityIndex, short *traversedCities, short pathSize)
+{
+    int result = 0;
+    for ( short i = 0 ; i < pathSize ; i++ )
+    {
+        if ( cityIndex == traversedCities[i] )
+        {
+            result = 1;
+            break;
+        }
+    }
+    return result;
+}
+
+short* getUnvisitedNeighbourNodes(short cityIndex, short *traversedCities, short pathSize)
+{
+    short remainingNumberOfNeighbours = NUM_CITIES - pathSize;
+    short *unvisitedNeighbours = (unsigned short*) malloc(sizeof(unsigned short) * remainingNumberOfNeighbours);
+    short *neighbours = getNeighbours(cityIndex);
+    short pos=0;
+
+    for ( short i = 0; i < NUM_CITIES-1 ; i++)
+    {
+        // printf("%d\n", neighbours[i]);
+        if ( neighbours[i] != -1 && hasBeenTraversed(neighbours[i], traversedCities, pathSize) == 0)
+        {
+            unvisitedNeighbours[pos] = neighbours[i];
+            pos++;
+        }
+    }
+    return unvisitedNeighbours;
+}
 
 //reads the cities and distances between them from text file
 void getMapData(char *filename)
@@ -130,11 +189,16 @@ void getMapData(char *filename)
     
     fclose(fp);
 
-    printMatrix();
+    // createPossibleCitiesArray();
+    // for ( short i = 0 ; i < NUM_CITIES ; i ++) { printf("City : %d\n", possibleCities[i]); }
+    
+    //printMatrix();
 }
 
+
+
 // Gets the sum of the two smallest edges for each city
-int getMinCostSum(int cityIndex)
+int getMinCostSum(short cityIndex)
 {
     int min1 = 1000000000;
     int min2 = 1000000000;
@@ -202,7 +266,7 @@ double computeInitialLowerBound()
 }
 
 // Identifies and returns the lowest highest edge, if its lower than the argument 'truncateValue'
-int getHighestTruncatedEdge(int truncateValue, int cityIndex)
+int getHighestTruncatedEdge(int truncateValue, short cityIndex)
 {
     int edge = -1;
     for ( int i = 0 ; i < NUM_ROWS ; i++ )
@@ -219,7 +283,7 @@ int getHighestTruncatedEdge(int truncateValue, int cityIndex)
 }
 
 // Recomputes the LowerBound to new Tour
-double recomputeLowerBound(double oldLowerBound, int roadCost, int oldCityIndex, int newCityIndex)
+double recomputeLowerBound(double oldLowerBound, int roadCost, short oldCityIndex, short newCityIndex)
 {
     return ( oldLowerBound + roadCost - (getHighestTruncatedEdge(roadCost, oldCityIndex) + getHighestTruncatedEdge(roadCost, newCityIndex)) / 2); 
 }
@@ -229,41 +293,52 @@ void tsp(char *filename, int maxLowerBound)
 {
     getMapData(filename);
 
-    int lowerBound = computeInitialLowerBound();
-    printf("Initial Lower Bound -> %d", lowerBound);
-    if ( lowerBound > maxLowerBound ) { return; }
-    
-    priority_queue_t *cities = queue_create(compare_elements);
-    
-    Tour firstTour = createTour(NUM_CITIES, 0, bestLowerBound, 0);
+    // for ( int i = 0 ; i < NUM_CITIES ; i++ )
+    // {
+    short temp[] = {0,3};
+    short *aaa = getUnvisitedNeighbourNodes(3, temp, 2);
 
-    queue_push(cities, &firstTour);
-    while ( cities->size > 0 )
+    for (int i = 0 ; i < 4 ; i++ )
     {
-        Tour* teste = queue_pop(cities);
-
-        //  if (Bound > BestTourCost)
-        //      return BestTour, BestTourCost
-
-        //  If (Length == N)
-        //       If ( Cost+Distances(Node, 0) < BestTourCost ) #Distances?????????
-        //          BestTour = BestTour.append(0)           #O que e q o zero simboliza????????????
-        //          BestTourCost = Cost + Distances(Node, 0)
-
-        //  Else
-        //      for ( remaining unviseted nodes)
-        //          updateLowerBound
-        //          if ( newBound > BestTourCost )
-        //              continue
-        //          newTour = newTour + new visited City
-        //          newCost = cost + Distances(Nodes,v)
-        //          Queue.add( new visited city)
-
-        //  return BestTour, BetterTourCost
-        free(teste);
-
-
+        printf("%d ", aaa[i]);
     }
+    // }
+    // int lowerBound = computeInitialLowerBound();
+    // printf("Initial Lower Bound -> %d", lowerBound);
+    // if ( lowerBound > maxLowerBound ) { return; }
+    
+    // priority_queue_t *cities = queue_create(compare_elements);
+    
+    // Tour firstTour = createTour(NUM_CITIES, 0, bestLowerBound, 0);
+
+    // queue_push(cities, &firstTour);
+    // while ( cities->size > 0 )
+    // {
+    //     Tour* currCity = queue_pop(cities);
+
+    //     //  if (Bound > BestTourCost)
+    //     //      return BestTour, BestTourCost
+
+    //     //  If (Length == N)
+    //     //       If ( Cost+Distances(Node, 0) < BestTourCost ) #Distances?????????
+    //     //          BestTour = BestTour.append(0)           #O que e q o zero simboliza????????????
+    //     //          BestTourCost = Cost + Distances(Node, 0)
+
+    //     //  Else
+    //          for ( remaining unviseted nodes)
+    //             //  updateLowerBound
+    //             currCity->bound = recomputeLowerBound(currCity->bound, /*funcaoDeRoadCost*/, currCity->currCity, /* funcaoDeNovaCidade */ );
+    //              if ( newBound > BestTourCost )
+    //                  continue
+    //              newTour = newTour + new visited City
+    //              newCost = cost + Distances(Nodes,v)
+    //              Queue.add( new visited city)
+
+    //     //  return BestTour, BetterTourCost
+    //     // free(currCity);
+
+
+    // }
 
 }
 

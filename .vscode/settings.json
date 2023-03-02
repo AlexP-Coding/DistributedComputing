@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "tour.h": "c"
+        "tour.h": "c",
+        "stdio.h": "c"
     }
 }

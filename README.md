@@ -1,6 +1,6 @@
 # DistributedComputing
 
-Project for our Distributed and Parallel Computing class
+Project for our Distributed and Parallel Computing class 
 
 
 ## Steps to Run:

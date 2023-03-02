@@ -6,6 +6,7 @@
 typedef struct
 {
 	unsigned short *tour;
+    unsigned short size;
 	unsigned short cost;
     unsigned short bound;
     unsigned short currCity;
