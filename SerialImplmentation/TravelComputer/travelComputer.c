@@ -306,10 +306,13 @@ Tour tsp(char *filename, int maxLowerBound)
 {
     getMapData(filename);
 
+
     int lowerBound = computeInitialLowerBound();
     printf("Initial Lower Bound -> %d", lowerBound);
-    if ( lowerBound > maxLowerBound ) { return; }
+    if ( lowerBound > maxLowerBound ) { return NULL ; }
     
+    short bestTourCost = maxLowerBound;
+
     priority_queue_t* cities = queue_create(compare_elements);
     
     Tour* currTour = createTour(NUM_CITIES, 0, bestLowerBound, 0);
@@ -324,7 +327,7 @@ Tour tsp(char *filename, int maxLowerBound)
 
          if (currTour->size == NUM_CITIES) {
             //
-            if ( ( currTour->cost + getRoadCost(currTour->currCity,0) ) < BestTourCost ){
+            if ( ( currTour->cost + getRoadCost(currTour->currCity,0) ) < bestTourCost ){
                 BestTour = BestTour.append(0)           
                 BestTourCost = Cost + Distances(Node, 0)
             }
@@ -333,7 +336,7 @@ Tour tsp(char *filename, int maxLowerBound)
             short *unvisitedNeighbours = getUnvisitedNeighbourNodes(currTour->currCity, currTour->tour, currTour->size);
             for ( short i = 0 ; i < (NUM_CITIES - currTour->size) ; i++ ){
                 currTour->bound = recomputeLowerBound(currTour->bound, getRoadCost(currTour->currCity, unvisitedNeighbours[i]), currTour->currCity, unvisitedNeighbours[i]);
-                if ( currTour->bound > 0 /*BestTourCost*/ )
+                if ( currTour->bound > bestTourCost )
                 {
                     continue;
                 }
@@ -367,6 +370,14 @@ int main(int argc, char *argv[])
 
     Tour result = tsp(argv[1], atoi(argv[2]));
 
+    if ( &result == NULL )
+    {
+        printf("NO SOLUTION");
+    }
+    else
+    {
+
+    }
     // exec_time += omp_get_wtime();
     // fprintf(stderr, "%.lfs\n");
 
