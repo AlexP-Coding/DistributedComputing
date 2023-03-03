@@ -2,4 +2,4 @@
 #include <stdlib.h>
 
 int* remove_element(int* arr, int size, int pos);
-int* add_element(int* arr, int size, int element); 
+short* add_element(short* arr, short size, short element); 

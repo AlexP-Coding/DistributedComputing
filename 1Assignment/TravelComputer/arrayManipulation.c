@@ -26,12 +26,12 @@ int* remove_element(int* arr, int size, int pos) {
     return new_arr;
 }
 
-int* add_element(int* arr, int size, int element) {
+short* add_element(short* arr, short size, short element) {
     // Allocate memory for the new array
-    int* new_arr = (int*) malloc((size + 1) * sizeof(int));
+    short* new_arr = (short*) malloc((size + 1) * sizeof(short));
 
     // Copy the elements from arr to new_arr
-    for (int i = 0; i < size; i++) {
+    for (short i = 0; i < size; i++) {
         new_arr[i] = arr[i];
     }
 

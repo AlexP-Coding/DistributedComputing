@@ -98,7 +98,7 @@ int getHighestCostEdge(short cityIndex)
     return max;
 }
 
-//creates the matrix based on of the input file
+// Creates the matrix based on of the input file
 void createMatrix(FILE *fp)
 {
     /* Allocates memory for the matrix */
@@ -182,7 +182,6 @@ short* getUnvisitedNeighbourNodes(short cityIndex, short *traversedCities, short
 
     for ( short i = 0; i < NUM_CITIES-1 ; i++)
     {
-        // printf("%d\n", neighbours[i]);
         if ( neighbours[i] != -1 && hasBeenTraversed(neighbours[i], traversedCities, pathSize) == 0)
         {
             unvisitedNeighbours[pos] = neighbours[i];
@@ -204,14 +203,9 @@ void getMapData(char *filename)
     
     getFileNumberRows(fp);
     rewind(fp);
-
     createMatrix(fp);
-    
     fclose(fp);
 
-    // createPossibleCitiesArray();
-    // for ( short i = 0 ; i < NUM_CITIES ; i ++) { printf("City : %d\n", possibleCities[i]); }
-    
     //printMatrix();
 }
 
@@ -309,49 +303,54 @@ double recomputeLowerBound(double oldLowerBound, int roadCost, short oldCityInde
 }
 
 // core function
-void tsp(char *filename, int maxLowerBound)
+Tour tsp(char *filename, int maxLowerBound)
 {
     getMapData(filename);
 
-    // int lowerBound = computeInitialLowerBound();
-    // printf("Initial Lower Bound -> %d", lowerBound);
-    // if ( lowerBound > maxLowerBound ) { return; }
+    int lowerBound = computeInitialLowerBound();
+    printf("Initial Lower Bound -> %d", lowerBound);
+    if ( lowerBound > maxLowerBound ) { return; }
     
-    // priority_queue_t *cities = queue_create(compare_elements);
+    priority_queue_t* cities = queue_create(compare_elements);
     
-    // Tour firstTour = createTour(NUM_CITIES, 0, bestLowerBound, 0);
+    Tour* currTour = createTour(NUM_CITIES, 0, bestLowerBound, 0);
 
-    // queue_push(cities, &firstTour);
-    // while ( cities->size > 0 )
-    // {
-    //     Tour* currTour = queue_pop(cities);
+    queue_push(cities, currTour);
+    while ( cities->size > 0 )
+    {
+        currTour = queue_pop(cities);
 
-    //     //  if (Bound > BestTourCost)
-    //     //      return BestTour, BestTourCost
+        //  if (Bound > BestTourCost)
+        //      return BestTour, BestTourCost
 
-    //     //  If (Length == N)
-    //     //       If ( Cost+Distances(Node, 0) < BestTourCost ) #Distances?????????
-    //     //          BestTour = BestTour.append(0)           #O que e q o zero simboliza????????????
-    //     //          BestTourCost = Cost + Distances(Node, 0)
-
-    //     //  Else
-    //         short *unvisitedNeighbours = getUnvisitedNeighbourNodes(currTour->currCity, currTour->tour, currTour->size);
-    //         for ( short i = 0 ; i < (NUM_CITIES - currTour->size) ; i++ ){
-    //             //  updateLowerBound
-    //             currTour->bound = recomputeLowerBound(currTour->bound, getRoadCost(currTour->currCity, unvisitedNeighbours[i]), currTour->currCity, unvisitedNeighbours[i]);
-    //             //  if ( newBound > BestTourCost )
-    //             //      continue
-    //             //  newTour = newTour + new visited City
-    //             //  newCost = cost + Distances(Nodes,v)
-    //             //  Queue.add( new visited city)
-    //         }
-
-    //     //  return BestTour, BetterTourCost
-    //     // free(currCity);
-
-
-    // }
-
+         if (currTour->size == NUM_CITIES) {
+            //
+            if ( ( currTour->cost + getRoadCost(currTour->currCity,0) ) < BestTourCost ){
+                BestTour = BestTour.append(0)           
+                BestTourCost = Cost + Distances(Node, 0)
+            }
+        }
+        else {
+            short *unvisitedNeighbours = getUnvisitedNeighbourNodes(currTour->currCity, currTour->tour, currTour->size);
+            for ( short i = 0 ; i < (NUM_CITIES - currTour->size) ; i++ ){
+                currTour->bound = recomputeLowerBound(currTour->bound, getRoadCost(currTour->currCity, unvisitedNeighbours[i]), currTour->currCity, unvisitedNeighbours[i]);
+                // if ( currTour->bound > 0 /*BestTourCost*/ )
+                // {
+                //     continue;
+                // }
+                //  newCost = cost + Distances(Nodes,v)
+                currTour->cost = currTour->cost + getRoadCost(currTour->currCity, unvisitedNeighbours[i]);
+                //  newTour = newTour + new visited City
+                currTour->tour = add_element(currTour->tour, currTour->size+1, unvisitedNeighbours[i]);
+                currTour->size=currTour->size+1;
+                currTour->currCity = unvisitedNeighbours[i];
+                //  Queue.add( new visited city)
+                queue_push(cities, currTour);
+            }
+        }
+    }
+    // free(currCity);
+    //  return BestTour, BetterTourCost
 }
 
 //main
@@ -367,7 +366,7 @@ int main(int argc, char *argv[])
     
     // exec_time = -omp_get_wtime();
 
-    tsp(argv[1], atoi(argv[2]));
+    Tour result = tsp(argv[1], atoi(argv[2]));
 
     // exec_time += omp_get_wtime();
     // fprintf(stderr, "%.lfs\n");
