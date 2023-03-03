@@ -9,7 +9,6 @@ int NUM_ROWS;
 int NUM_CITIES;
 
 int **matrix;
-short *possibleCities;
 double bestLowerBound;
 
 // prints the arguments received
@@ -334,10 +333,10 @@ Tour tsp(char *filename, int maxLowerBound)
             short *unvisitedNeighbours = getUnvisitedNeighbourNodes(currTour->currCity, currTour->tour, currTour->size);
             for ( short i = 0 ; i < (NUM_CITIES - currTour->size) ; i++ ){
                 currTour->bound = recomputeLowerBound(currTour->bound, getRoadCost(currTour->currCity, unvisitedNeighbours[i]), currTour->currCity, unvisitedNeighbours[i]);
-                // if ( currTour->bound > 0 /*BestTourCost*/ )
-                // {
-                //     continue;
-                // }
+                if ( currTour->bound > 0 /*BestTourCost*/ )
+                {
+                    continue;
+                }
                 //  newCost = cost + Distances(Nodes,v)
                 currTour->cost = currTour->cost + getRoadCost(currTour->currCity, unvisitedNeighbours[i]);
                 //  newTour = newTour + new visited City
