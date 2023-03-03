@@ -5,7 +5,7 @@
 Tour *createTour(int numCities, int cost, float bound, int currCity, int size)
 {
     Tour* tour = malloc(sizeof(Tour));
-    tour->tour = (unsigned short*) malloc(sizeof(unsigned short) * numCities);
+    tour->tour = (unsigned short*) malloc(sizeof(unsigned short) * (numCities+1));
     tour->size = size;
     tour->cost = cost;
     tour->bound = bound;
