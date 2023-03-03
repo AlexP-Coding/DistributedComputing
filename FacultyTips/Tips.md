@@ -18,8 +18,7 @@
 - The task manager has a priority functionality that can check and compare priority by itself, without need for the priority queue
 
 ### 6 - Compilation
-- Do not forget the makefile (optimization -O3), one for each iteration
-- File name should be tsp.c
+- Do not forget the makefile (optimization -O3, flag -fopenmp), one for each iteration
 - Executable name must be tsp
 
 ### 7 - Submission
