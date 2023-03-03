@@ -1,14 +1,14 @@
 #include"arrayManipulation.h"
 
 
-int* remove_element(int* arr, int size, int pos) {
+short* remove_element(short* arr, short size, short pos) {
     // Check if pos is within bounds
     if (pos < 0 || pos >= size) {
         return arr; // Return the original array if pos is invalid
     }
 
     // Allocate memory for the new array
-    int* new_arr = (int*) malloc((size - 1) * sizeof(int));
+    short* new_arr = (short*) malloc((size - 1) * sizeof(short));
 
     // Copy the elements from arr to new_arr, except for the one at pos
     int j = 0; // Index for the new array

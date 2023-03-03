@@ -9,7 +9,7 @@ int NUM_ROWS;
 int NUM_CITIES;
 
 int **matrix;
-double bestLowerBound;
+float bestLowerBound;
 
 // prints the arguments received
 void argumentSumary(int nrArgs, char *args[])
@@ -205,7 +205,7 @@ void getMapData(char *filename)
     createMatrix(fp);
     fclose(fp);
 
-    //printMatrix();
+    // printMatrix();
 }
 
 
@@ -213,11 +213,11 @@ void getMapData(char *filename)
 // Gets the sum of the two smallest edges for each city
 int getMinCostSum(short cityIndex)
 {
-    int min1 = 1000000000;
-    int min2 = 1000000000;
+    short min1 = 10000;
+    short min2 = 10000;
 
-    int *arr = NULL;
-    int arr_size=0;
+    short *arr = NULL;
+    short arr_size=0;
 
     /* creates an array with all the cost associated to the argumnent cityIndex*/
     for ( int i = 0 ; i < NUM_ROWS ; i++ )
@@ -263,14 +263,15 @@ int getMinCostSum(short cityIndex)
     // printf("AAAA %d -- %d\n", min1, min2);
 
     free(arr);
+
     return ( min1 + min2 );
 }
 
 // Computes and returns the initial lower bound
-double computeInitialLowerBound()
+float computeInitialLowerBound()
 {
     int lowerBound = 0;
-    for ( int i = 0 ; i < NUM_CITIES ; i++ )
+    for ( int i = 0 ; i < NUM_CITIES  ; i++ )
     {
         lowerBound = lowerBound + getMinCostSum(i);
     }
@@ -296,7 +297,7 @@ int getHighestTruncatedEdge(int truncateValue, short cityIndex)
 }
 
 // Recomputes the LowerBound to new Tour
-double recomputeLowerBound(double oldLowerBound, int roadCost, short oldCityIndex, short newCityIndex)
+float recomputeLowerBound(float oldLowerBound, int roadCost, short oldCityIndex, short newCityIndex)
 {
     return ( oldLowerBound + roadCost - (getHighestTruncatedEdge(roadCost, oldCityIndex) + getHighestTruncatedEdge(roadCost, newCityIndex)) / 2); 
 }
@@ -306,18 +307,17 @@ Tour tsp(char *filename, int maxLowerBound)
 {
     getMapData(filename);
 
-
     int lowerBound = computeInitialLowerBound();
-    printf("Initial Lower Bound -> %d", lowerBound);
-    if ( lowerBound > maxLowerBound ) { return NULL ; }
+    printf("Initial Lower Bound -> %d\n", lowerBound);
+    // if ( lowerBound > maxLowerBound ) { return NULL ; }
     
     short bestTourCost = maxLowerBound;
 
     priority_queue_t* cities = queue_create(compare_elements);
-    
-    Tour* currTour = createTour(NUM_CITIES, 0, bestLowerBound, 0);
 
+    Tour* currTour = createTour(NUM_CITIES, 0, bestLowerBound, 0, 1);
     queue_push(cities, currTour);
+
     while ( cities->size > 0 )
     {
         currTour = queue_pop(cities);

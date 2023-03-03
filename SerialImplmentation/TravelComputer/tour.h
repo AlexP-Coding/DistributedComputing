@@ -8,12 +8,12 @@ typedef struct
 	unsigned short *tour;
     unsigned short size;
 	unsigned short cost;
-    unsigned short bound;
+    float bound;
     unsigned short currCity;
 } Tour;
 
 // Creates and returs a Tour
-Tour* createTour(int numCities, int cost, int bound, int currCity);
+Tour* createTour(int numCities, int cost, float bound, int currCity, int size);
 
 //compares the travel cost bwtween two cities
 char compare_elements(void *a, void *b);
