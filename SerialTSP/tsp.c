@@ -9,7 +9,7 @@
 int main(int argc, char* argv[]) {
 	double exec_time;
 	double max_value;
-	city_details* city_info;
+	city_details city_info;
 
 	if (argc != 3) {
 		raise_error("Error: input should be in format 'tsp <cities file> <max value>'.");

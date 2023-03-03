@@ -10,8 +10,8 @@ void raise_error(char msg[]) {
 
 
 /* Reads the cities file and returns its information within a struct */
-city_details* parse_cities_file(char* cities_file_path) {
-	city_details* city_info = (city_details*) malloc(sizeof(city_details));
+city_details parse_cities_file(char* cities_file_path) {
+	city_details city_info;
 
 	FILE* cities_file = fopen(cities_file_path, "r");
 	if (cities_file == NULL) {
@@ -19,14 +19,14 @@ city_details* parse_cities_file(char* cities_file_path) {
 	}
 
 	// Stores number of cities and number of direct connections between them
-	int nr_args = fscanf(cities_file, "%d %d\n", &city_info->nr_cities, &city_info->nr_conns);
+	int nr_args = fscanf(cities_file, "%d %d\n", &city_info.nr_cities, &city_info.nr_conns);
 	if (nr_args != 2)
 			raise_error("Error: input should be in form <nr_cities> <nr_connections>");
 		
-	city_info->dist_matrix = init_dist_matrix(city_info->nr_cities);
+	city_info.dist_matrix = init_dist_matrix(city_info.nr_cities);
 
 	// Stores distances between each directly connected city
-	for (int i = 0; i < city_info->nr_conns; i++) {
+	for (int i = 0; i < city_info.nr_conns; i++) {
 		int city1, city2;
 		double dist;
 
@@ -34,7 +34,7 @@ city_details* parse_cities_file(char* cities_file_path) {
 		if (nr_args != 3)
 			raise_error("Error: input should be in form <city_id_1> <city_id_2> <distance>");
 		
-		city_info->dist_matrix[city1][city2] = city_info->dist_matrix[city2][city1] = dist;
+		city_info.dist_matrix[city1][city2] = city_info.dist_matrix[city2][city1] = dist;
 	}
 
 	fclose(cities_file);
@@ -42,15 +42,12 @@ city_details* parse_cities_file(char* cities_file_path) {
 }
 
 
-void free_city_info(city_details *city_info) {
+void free_city_info(city_details city_info) {
 
-	for (int i = 0; i < city_info->nr_cities; i++) {
-		free(city_info->dist_matrix[i]);
+	for (int i = 0; i < city_info.nr_cities; i++) {
+		free(city_info.dist_matrix[i]);
 	}
-
-	free(city_info->dist_matrix);
-
-	free(city_info);
+	free(city_info.dist_matrix);
 }
 
 
@@ -72,14 +69,14 @@ double** init_dist_matrix(int nr_cities) {
 
 
 /* Prints number of cities, number of direct connections, and distances matrix */
-void print_city_info(city_details* city_info) {
+void print_city_info(city_details city_info) {
 	printf("PRINTING CITIES INFO:\n");
-	printf("Nr cities = %d. Nr conns = %d.\n", city_info->nr_cities, city_info->nr_conns);
+	printf("Nr cities = %d. Nr conns = %d.\n", city_info.nr_cities, city_info.nr_conns);
 
 	printf("Conns:\n");
-	for (int i = 0; i < city_info->nr_cities; i++) {
-		for (int j = 0; j < city_info->nr_cities; j++)
-			printf("%0.2f\t", city_info->dist_matrix[i][j]);
+	for (int i = 0; i < city_info.nr_cities; i++) {
+		for (int j = 0; j < city_info.nr_cities; j++)
+			printf("%0.2f\t", city_info.dist_matrix[i][j]);
 
 		printf("\n");
 	}
