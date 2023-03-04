@@ -8,9 +8,12 @@
 int NUM_ROWS;
 int NUM_CITIES;
 
+#define NA_VALUE -1
+
 int **matrix;
-float bestLowerBound;
 Tour* bestTour;
+
+
 
 // prints the arguments received
 void argumentSumary(int nrArgs, char *args[])
@@ -66,7 +69,7 @@ void freeMatrix(int num_rows)
 // Returns the Road Cost between two Cities
 short getRoadCost(short oldCityIndex, short newCityIndex)
 {
-    short cost = -1;
+    short cost = NA_VALUE;
     for ( short i = 0 ; i < NUM_ROWS ; i++ )
     {
         if ( matrix[i][0] == oldCityIndex && matrix[i][1] == newCityIndex )
@@ -134,11 +137,11 @@ void createMatrix(FILE *fp)
 
 // Returns the neighbours of a city
 short* getNeighbours(int index) {
-    short* neighbours = malloc(sizeof(int) * NUM_CITIES-1);
+    short* neighbours = malloc(sizeof(int) * NUM_CITIES-1); //TODO AQUI TALVEZ SEJA DE METER PARENTESIS NO numcities - 1
     int count = 0;
 
     // Fills the array with -1
-    for (int i = 0; i < NUM_CITIES; i++) { neighbours[i] = -1;}
+    for (int i = 0; i < NUM_CITIES; i++) { neighbours[i] = NA_VALUE;}
 
     // Loop through each row in the matrix
     for (int i = 0; i < NUM_ROWS; i++) {
@@ -182,7 +185,7 @@ short* getUnvisitedNeighbourNodes(short cityIndex, short *traversedCities, short
 
     for ( short i = 0; i < NUM_CITIES-1 ; i++)
     {
-        if ( neighbours[i] != -1 && hasBeenTraversed(neighbours[i], traversedCities, pathSize) == 0)
+        if ( neighbours[i] != NA_VALUE && hasBeenTraversed(neighbours[i], traversedCities, pathSize) == 0)
         {
             unvisitedNeighbours[pos] = neighbours[i];
             pos++;
@@ -276,14 +279,13 @@ float computeInitialLowerBound()
     {
         lowerBound = lowerBound + getMinCostSum(i);
     }
-    bestLowerBound = lowerBound;
-    return (lowerBound / 2) ;
+    return (lowerBound / 2);
 }
 
 // Identifies and returns the lowest highest edge, if its lower than the argument 'truncateValue'
 int getHighestTruncatedEdge(int truncateValue, short cityIndex)
 {
-    int edge = -1;
+    int edge = NA_VALUE;
     for ( int i = 0 ; i < NUM_ROWS ; i++ )
     {
         if ( matrix[i][0] == cityIndex || matrix[i][1] == cityIndex )
@@ -300,7 +302,7 @@ int getHighestTruncatedEdge(int truncateValue, short cityIndex)
 short connetsToBase(short currCity)
 {
     short base = 0;
-    if ( getRoadCost(currCity, base) == -1){
+    if ( getRoadCost(currCity, base) == NA_VALUE ){
         return 1;
     }
     return 0;
@@ -313,47 +315,42 @@ float recomputeLowerBound(float oldLowerBound, int roadCost, short oldCityIndex,
 }
 
 // core function
-Tour* tsp(char *filename, int maxLowerBound)
+Tour* tsp(char *filename, int maxTourCost)
 {
     getMapData(filename);
 
-    int lowerBound = computeInitialLowerBound();
-    printf("Initial Lower Bound -> %d\n", lowerBound);
-    if ( lowerBound > maxLowerBound ) { return NULL ; }
+    int initialLowerBound = computeInitialLowerBound();
+    printf("Initial Lower Bound -> %d\n", initialLowerBound);
     
-    short bestTourCost = maxLowerBound;
+    bestTour = createTour( NA_VALUE, maxTourCost, initialLowerBound, NA_VALUE, NA_VALUE);
+    // short bestTourCost = maxLowerBound;
 
     priority_queue_t* cities = queue_create(compare_elements);
 
-    Tour* currTour = createTour(NUM_CITIES, 0, bestLowerBound, 0, 1);
+    Tour* currTour = createTour(NUM_CITIES, 0, initialLowerBound, 0, 1);
     queue_push(cities, currTour);
 
     while ( cities->size > 0 )
     {
         currTour = queue_pop(cities);
 
-        if ( currTour->bound >= bestTourCost ){
-            //  return BestTour, BestTourCost
-            return currTour;
+        if ( currTour->bound >= bestTour->cost ){
+            return bestTour; 
         }
 
         if (currTour->size == NUM_CITIES) {
-            //
             if ( connetsToBase(currTour->currCity) && 
-                (currTour->cost + getRoadCost(currTour->currCity,0) ) < bestTourCost )
+                (currTour->cost + getRoadCost(currTour->currCity, 0) ) < bestTour->cost )
                 {
-                // BestTour = BestTour.append(0)       
-                currTour->tour = add_element(currTour->tour, currTour->size+1, 0);
-                currTour->cost = currTour->cost + getRoadCost(currTour->currCity, 0);
-                // BestTourCost = Cost + Distances(Node, 0)
-                bestTourCost = currTour->cost + getRoadCost(currTour->currCity, 0);
+                bestTour->cost = currTour->cost + getRoadCost(currTour->currCity, 0);
+                bestTour->tour = add_element(currTour->tour, currTour->size + 1, 0);
             }
         }
         else {
             short *unvisitedNeighbours = getUnvisitedNeighbourNodes(currTour->currCity, currTour->tour, currTour->size);
             for ( short i = 0 ; i < (NUM_CITIES - currTour->size) ; i++ ){
                 currTour->bound = recomputeLowerBound(currTour->bound, getRoadCost(currTour->currCity, unvisitedNeighbours[i]), currTour->currCity, unvisitedNeighbours[i]);
-                if ( currTour->bound > bestTourCost )
+                if ( currTour->bound > bestTour->cost )
                 {
                     continue;
                 }
@@ -368,7 +365,7 @@ Tour* tsp(char *filename, int maxLowerBound)
             }
         }
     }
-    return currTour;
+    return bestTour;
 }
 
 //main
