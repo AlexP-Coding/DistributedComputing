@@ -1,7 +1,7 @@
 #include"queue.h"
 #include"tour.h"
 #include"arrayManipulation.h"
-// #include<omp.h>
+#include"omp.h"
 
 #define MAX_LINE_LENGTH 10
 #define NUM_COLLUMNS 3
@@ -323,18 +323,20 @@ Tour* tsp(char *filename, int maxTourCost)
     printf("Initial Lower Bound -> %d\n", initialLowerBound);
     
     bestTour = createTour( NA_VALUE, maxTourCost, initialLowerBound, NA_VALUE, NA_VALUE);
-    // short bestTourCost = maxLowerBound;
 
-    priority_queue_t* cities = queue_create(compare_elements);
+    priority_queue_t* cities = queue_create(compare_tours);
 
-    Tour* currTour = createTour(NUM_CITIES, 0, initialLowerBound, 0, 1);
+    Tour* currTour = createTour(NUM_CITIES, 0, initialLowerBound, 0, 0);
     queue_push(cities, currTour);
 
     while ( cities->size > 0 )
     {
         currTour = queue_pop(cities);
 
+        printTour(currTour);
+
         if ( currTour->bound >= bestTour->cost ){
+            printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
             return bestTour; 
         }
 
@@ -343,10 +345,12 @@ Tour* tsp(char *filename, int maxTourCost)
                 (currTour->cost + getRoadCost(currTour->currCity, 0) ) < bestTour->cost )
                 {
                 bestTour->cost = currTour->cost + getRoadCost(currTour->currCity, 0);
-                bestTour->tour = add_element(currTour->tour, currTour->size + 1, 0);
+                bestTour->tour = add_element(currTour->tour, currTour->size, 0);
+                printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n");
             }
         }
         else {
+            printf("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
             short *unvisitedNeighbours = getUnvisitedNeighbourNodes(currTour->currCity, currTour->tour, currTour->size);
             for ( short i = 0 ; i < (NUM_CITIES - currTour->size) ; i++ ){
                 currTour->bound = recomputeLowerBound(currTour->bound, getRoadCost(currTour->currCity, unvisitedNeighbours[i]), currTour->currCity, unvisitedNeighbours[i]);
@@ -354,18 +358,44 @@ Tour* tsp(char *filename, int maxTourCost)
                 {
                     continue;
                 }
-                //  newCost = cost + Distances(Nodes,v)
                 currTour->cost = currTour->cost + getRoadCost(currTour->currCity, unvisitedNeighbours[i]);
-                //  newTour = newTour + new visited City
-                currTour->tour = add_element(currTour->tour, currTour->size+1, unvisitedNeighbours[i]);
-                currTour->size=currTour->size+1;
+                currTour->tour = add_element(currTour->tour, currTour->size, unvisitedNeighbours[i]);
+                currTour->size=currTour->size + 1;
                 currTour->currCity = unvisitedNeighbours[i];
-                //  Queue.add( new visited city)
                 queue_push(cities, currTour);
             }
         }
     }
+    printf("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc");
     return bestTour;
+}
+
+
+void teste()
+{
+    priority_queue_t* q = queue_create(compare_tours);
+
+    queue_push(q, createTour(0,0,3.0,0,0));
+    queue_push(q, createTour(0,0,1.0,0,0));
+    queue_push(q, createTour(0,0,2.0,0,0));
+    queue_push(q, createTour(0,0,4.0,0,0));
+
+    printf("SIZE : %d\n",q->size);
+    
+    Tour* t;
+    int s = q->size;
+    for ( int i = 0; i < s ; i++)
+    {
+        t = queue_pop(q);
+        printf("%f ", t->bound);
+        // t = queue_pop(q);
+        // printf("%f ", t->bound);
+        // t = queue_pop(q);
+        // printf("%f ", t->bound);
+        // t = queue_pop(q);
+        // printf("%f ", t->bound);
+    }
+
 }
 
 //main
@@ -381,8 +411,10 @@ int main(int argc, char *argv[])
     
     // exec_time = -omp_get_wtime();
 
+    // teste();
     Tour* result = tsp(argv[1], atoi(argv[2]));
 
+    printf("/////////////////////////////\nResults :\n");
     if ( result == NULL )
     {
         printf("NO SOLUTION");
@@ -390,13 +422,14 @@ int main(int argc, char *argv[])
     else
     {
         printf("%f\n", result->bound);
-        for ( short i = 0 ; i < NUM_CITIES + 1 ; i++)
+        for ( short i = 0 ; i < (NUM_CITIES + 1) ; i++)
         {
-            printf("%d ");
+            printf("%d ", result->tour[i]);
         }
     }
+
     // exec_time += omp_get_wtime();
-    // fprintf(stderr, "%.lfs\n");
+    // fprintf(stderr, "\n%.lfs\n");
 
     // print_result();
 
