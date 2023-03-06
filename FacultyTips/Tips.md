@@ -23,3 +23,10 @@
 
 ### 7 - Submission
 - If we made improvements to the serial version post-delivery, we may re-submit it with the OpenMP version (if so, write the changes in the report)
+
+
+## 2023-03-06
+
+### 1 - Common causes of time and memory issues
+- Allocating too large a space for tree
+- Prunning isn't working right so we are visiting nodes we shouldn't be
