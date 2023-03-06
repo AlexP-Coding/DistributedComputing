@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "tour.h": "c",
+        "stdio.h": "c"
+    }
+}

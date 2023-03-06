@@ -1,0 +1,13 @@
+O QUE E QUE ACONTECE SE A ULTIMA CIDADE NAO CONECTAR AO ZERO?
+Caminho fica invalido
+
+O QUE E O DISTANCES()?
+Distances -> matriz das distancias mesmo.
+
+PORQUE E Q, DENTRO DO WHILE, NO PRIMEIRO IF NOS VERIFICAMOS SE BOUND >= BESTTOURCOST?? O BOUND NAO VAI SER SEMPRE MAIOR QUE O BEST TOUR COST NO INICIO?
+O BestTourCost é o nosso valor inicial que damos como argumento
+
+PARA QUE E Q SERVE O ULTIMO IF SE FAZEMOS CONTINUE LA DENTRO?
+o continue salta tudo a sua frente em C e volta para o while
+
+ESTAMOS MESMO A COMPARAR O BOUND COM O COST, CERTO?
