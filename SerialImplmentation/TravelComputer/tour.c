@@ -12,18 +12,12 @@ Tour *createTour(int numCities, int cost, float bound, int currCity, int size)
     tour->bound = bound;
     tour->currCity = currCity;
 
-    tour->tour =  add_element(tour->tour, size, currCity);
+    tour->tour =  add_element(tour->tour, size, currCity, 1);
     tour->size = size+1;
 
     return tour;
 }
 
- DAD *createDAD(short size)
-{
-    DAD* d = malloc(sizeof(DAD));
-    d->size = size;
-    return d;
-}
 
 //compares the travel cost bwtween two cities
 char compare_tours(void *a, void *b) 
@@ -34,20 +28,23 @@ char compare_tours(void *a, void *b)
     if (tour_a->bound > tour_b->bound) {
         return 1;
     }
-        return 0;
+    return 0;
 }
 
-//compares the travel cost bwtween two cities
-char compare_DAD(void *a, void *b) 
+Tour* addCityToTour(Tour* oldtour, short newCity, short roadCost, float newBound,short numCities)
 {
-    DAD* dad_a = (DAD*)a;
-    DAD* dad_b = (DAD*)b;
+    Tour* newTour = malloc(sizeof(Tour));
+    newTour->tour = (unsigned short*) malloc(sizeof(unsigned short) * (numCities+1));
+    newTour->size = oldtour->size;
+    newTour->cost = oldtour->cost + roadCost;
+    newTour->bound = newBound;
+    newTour->currCity = newCity;
 
-    if (dad_a->size > dad_b->size) {
-        return 1;
-    }
+    newTour->tour = add_element(oldtour->tour, newTour->size, newCity, 0);
 
-    return 0;
+    newTour->size = oldtour->size+1;
+
+    return newTour;
 }
 
 // Prints a tours atributes
@@ -60,9 +57,9 @@ void printTour(Tour* tourToPrint)
     {
         printf( "%d ", tourToPrint->tour[i] );
     }
-    // printf( "%d ", tourToPrint->tour[2] );
     printf("\n");
     printf("Cost - %d\n", tourToPrint->cost);
     printf("Bound - %f\n", tourToPrint->bound);
     printf("Curr City - %d\n", tourToPrint->currCity);
 }
+

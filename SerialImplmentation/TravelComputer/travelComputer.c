@@ -137,7 +137,7 @@ void createMatrix(FILE *fp)
 
 // Returns the neighbours of a city
 short* getNeighbours(int index) {
-    short* neighbours = malloc(sizeof(int) * NUM_CITIES-1); //TODO AQUI TALVEZ SEJA DE METER PARENTESIS NO numcities - 1
+    short* neighbours = malloc(sizeof(int) * (NUM_CITIES-1)); //TODO AQUI TALVEZ SEJA DE METER PARENTESIS NO numcities - 1
     int count = 0;
 
     // Fills the array with -1
@@ -226,13 +226,11 @@ int getMinCostSum(short cityIndex)
     /* creates an array with all the cost associated to the argumnent cityIndex*/
     for ( int i = 0 ; i < NUM_ROWS ; i++ )
     {
-        // printf("BBBBBB %d : %d ||| ", matrix[i][0],  matrix[i][1]);
         if ( matrix[i][0] == cityIndex || matrix[i][1] == cityIndex )
         {
-            // printf("CCCCCCCCC %d : %d ||| ", matrix[i][0],  matrix[i][1]);
             int cost = matrix[i][2];   
             
-            arr = add_element(arr, arr_size, cost);
+            arr = add_element(arr, arr_size, cost, 1);
             arr_size++;
         }
     }
@@ -263,8 +261,6 @@ int getMinCostSum(short cityIndex)
     }
     arr = remove_element(arr, arr_size, pos);
     arr_size = arr_size - 1;
-
-    // printf("AAAA %d -- %d\n", min1, min2);
 
     free(arr);
 
@@ -320,82 +316,46 @@ Tour* tsp(char *filename, int maxTourCost)
     getMapData(filename);
 
     int initialLowerBound = computeInitialLowerBound();
+    double recomputedBound;
     printf("Initial Lower Bound -> %d\n", initialLowerBound);
-    
-    bestTour = createTour( NA_VALUE, maxTourCost, initialLowerBound, NA_VALUE, NA_VALUE);
+
+    bestTour = createTour( NA_VALUE, maxTourCost, NA_VALUE, NA_VALUE, NA_VALUE);
 
     priority_queue_t* cities = queue_create(compare_tours);
-
-    Tour* currTour = createTour(NUM_CITIES, 0, initialLowerBound, 0, 0);
-    queue_push(cities, currTour);
+    queue_push(cities, createTour(NUM_CITIES, 0, initialLowerBound, 0, 0));
 
     while ( cities->size > 0 )
     {
-        currTour = queue_pop(cities);
+        Tour* currTour = queue_pop(cities);
 
-        printTour(currTour);
+        // printTour(currTour);
 
         if ( currTour->bound >= bestTour->cost ){
-            printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
             return bestTour; 
         }
-
         if (currTour->size == NUM_CITIES) {
-            if ( connetsToBase(currTour->currCity) && 
+            if ( connetsToBase(currTour->currCity) != NA_VALUE && 
                 (currTour->cost + getRoadCost(currTour->currCity, 0) ) < bestTour->cost )
                 {
                 bestTour->cost = currTour->cost + getRoadCost(currTour->currCity, 0);
-                bestTour->tour = add_element(currTour->tour, currTour->size, 0);
-                printf("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n");
+                bestTour->tour = add_element(currTour->tour, currTour->size, 0, 1);
             }
         }
         else {
-            printf("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
             short *unvisitedNeighbours = getUnvisitedNeighbourNodes(currTour->currCity, currTour->tour, currTour->size);
             for ( short i = 0 ; i < (NUM_CITIES - currTour->size) ; i++ ){
-                currTour->bound = recomputeLowerBound(currTour->bound, getRoadCost(currTour->currCity, unvisitedNeighbours[i]), currTour->currCity, unvisitedNeighbours[i]);
-                if ( currTour->bound > bestTour->cost )
+                // printf("Neighbour - %d\n", unvisitedNeighbours[i]);
+                recomputedBound = recomputeLowerBound(currTour->bound, getRoadCost(currTour->currCity, unvisitedNeighbours[i]), currTour->currCity, unvisitedNeighbours[i]);
+                if ( recomputedBound > bestTour->cost )
                 {
                     continue;
                 }
-                currTour->cost = currTour->cost + getRoadCost(currTour->currCity, unvisitedNeighbours[i]);
-                currTour->tour = add_element(currTour->tour, currTour->size, unvisitedNeighbours[i]);
-                currTour->size=currTour->size + 1;
-                currTour->currCity = unvisitedNeighbours[i];
-                queue_push(cities, currTour);
+                short roadCost = getRoadCost(currTour->currCity, unvisitedNeighbours[i]);
+                queue_push(cities, addCityToTour(currTour, unvisitedNeighbours[i], roadCost, recomputedBound, currTour->size));
             }
         }
+        free(currTour);
     }
-    printf("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc");
-    return bestTour;
-}
-
-
-void teste()
-{
-    priority_queue_t* q = queue_create(compare_tours);
-
-    queue_push(q, createTour(0,0,3.0,0,0));
-    queue_push(q, createTour(0,0,1.0,0,0));
-    queue_push(q, createTour(0,0,2.0,0,0));
-    queue_push(q, createTour(0,0,4.0,0,0));
-
-    printf("SIZE : %d\n",q->size);
-    
-    Tour* t;
-    int s = q->size;
-    for ( int i = 0; i < s ; i++)
-    {
-        t = queue_pop(q);
-        printf("%f ", t->bound);
-        // t = queue_pop(q);
-        // printf("%f ", t->bound);
-        // t = queue_pop(q);
-        // printf("%f ", t->bound);
-        // t = queue_pop(q);
-        // printf("%f ", t->bound);
-    }
-
 }
 
 //main
@@ -407,11 +367,10 @@ int main(int argc, char *argv[])
         printf("Number of arguments is incorrect. Should be 2");
         return 1;
     }
-    // argumentSumary(argc, argv);
+    argumentSumary(argc, argv);
     
     // exec_time = -omp_get_wtime();
 
-    // teste();
     Tour* result = tsp(argv[1], atoi(argv[2]));
 
     printf("/////////////////////////////\nResults :\n");
@@ -421,7 +380,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("%f\n", result->bound);
+        printf("%d\n", result->cost);
         for ( short i = 0 ; i < (NUM_CITIES + 1) ; i++)
         {
             printf("%d ", result->tour[i]);

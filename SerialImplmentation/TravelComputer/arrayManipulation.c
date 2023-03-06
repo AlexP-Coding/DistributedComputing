@@ -26,7 +26,7 @@ short* remove_element(short* arr, short size, short pos) {
     return new_arr;
 }
 
-short* add_element(short* arr, short size, short element) {
+short* add_element(short* arr, short size, short element, short freeOldArray) {
     // Allocate memory for the new array
     short* new_arr = (short*) malloc((size + 1) * sizeof(short));
 
@@ -38,8 +38,12 @@ short* add_element(short* arr, short size, short element) {
     // Add the new element to the end of the new array
     new_arr[size] = element;
 
-    // Free the memory used by the original array
-    free(arr);
+    if (freeOldArray)
+    {
+        // Free the memory used by the original array
+        free(arr);
+    }
+    
 
     // Return the new array
     return new_arr;
