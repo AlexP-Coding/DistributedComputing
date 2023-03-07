@@ -1,6 +1,8 @@
 // Your First C++ Program
 
 #include <iostream>
+#include <cstring>
+#include <string>
 #include"./nqueue/queue.hpp"
 #include"city.hpp"
 
@@ -20,50 +22,84 @@ int checkFileConsistency(FILE *fp)
     return 0;
 }
 
-void buildCity(FILE* fp)
+void createCities()
 {
     cities = new City[NUM_CITIES];
+    for (int i = 0 ; i < NUM_CITIES ; i++ )
+    {
+        cities[i] = City(i, NUM_CITIES);
+    }
+}
+
+void buildCity(FILE* fp)
+{
 
     char line[MAX_LINE_LENGTH]; 
-    int cityId1, cityId2;
-    double roadCost;
+    char* token;
 
-    for ( int cityIndex = 0 ; cityIndex < NUM_CITIES ; cityIndex++ )
-    {
+    int city1, city2;
+    double edgeCost;
+
+    createCities();
+
+    // for ( int cityIndex = 0 ; cityIndex < NUM_CITIES ; cityIndex++ )
+    // {
         
-        std::cout << "aaaa " << cityIndex << std::endl;
-        cities[cityIndex] = City (cityIndex, NUM_CITIES);
+        // std::cout << "aaaa " << cityIndex << std::endl;
+
+        fgets(line, MAX_LINE_LENGTH, fp);
 
         for (int i = 0; i < NUMBER_ROWS; i++) 
         {
-            std::cout << "ZAZA : " << roadCost << std::endl;
-            fscanf(fp, "%d %d %lf", &cityId1, &cityId2, &roadCost);
+            // fscanf(fp, "%d %d %lf", &cityId1, &cityId2, &roadCost);
+            fgets(line, MAX_LINE_LENGTH, fp);
+
+            // token = strtok(line, " ");
+
+
+            fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
+
+            // city1 = atoi(strtok(line, " "));
+            // city2 = atoi(strtok(NULL, " "));
+            // edgeCost = strtof(strtok(NULL, " "), &token);
             
-            // std::cout << "City 1 " << cityId1 << std::endl;
-            // std::cout << "City 2 " << cityId2 << std::endl;
-            // std::cout << "Road Cost " << roadCost << std::endl;
+            // edgeCost = std::strtod(strtok(NULL, " "), nullptr);
 
-            // std::cout << "v2 -> " << cities[cityIndex].getId() << std::endl;
+            std::cout << "City 1 - " << city1 << std::endl;
+            std::cout << "City 2 - " << city2 << std::endl;
+            std::cout << "Cost " << edgeCost << std::endl;
 
-            if ( cityId1 == cityIndex )
-            {
-                // std::cout << "PRIM : " << roadCost << std::endl;
-                cities[cityIndex].addNeighbour(cityId2, roadCost);
-            }
-            if ( cityId2 == cityIndex )
-            {
-                // std::cout << "SEC : " << roadCost << std::endl;
-                cities[cityIndex].addNeighbour(cityId1, roadCost);
-            }
-            std::cout << "TATA : " << roadCost << std::endl;
+            cities[city1].addNeighbour(city2, edgeCost);
+            cities[city2].addNeighbour(city1, edgeCost);
+            
+
+
+
+            // if ( cityId1 == cityIndex )
+            // {
+            //     // std::cout << "PRIM : " << roadCost << std::endl;
+            //     cities[cityIndex].addNeighbour(cityId2, roadCost);
+            // }
+            // if ( cityId2 == cityIndex )
+            // {
+            //     // std::cout << "SEC : " << roadCost << std::endl;
+            //     cities[cityIndex].addNeighbour(cityId1, roadCost);
+            // }
+            // std::cout << "TATA : " << roadCost << std::endl;
         }
+        std::cout << "AAAAAAAAAAA" << std::endl;
 
+        for ( int i = 0 ; i < NUM_CITIES ; i++ )
+        {
+            cities[i].toString();
+        }
+        // std::cout << cities[0].getNeighbours()[0] << std::endl ;
 
-        cities[cityIndex].toString();
-    }
+            // cities[cityIndex].toString();
+    // }
 
     std::cout << "v3 -> " << std::endl;
-    cities[0].toString();
+    // cities[0].toString();
 }
 
 void getMapData(char* filename)
