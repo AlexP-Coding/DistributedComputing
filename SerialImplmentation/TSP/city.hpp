@@ -1,17 +1,19 @@
-class city
+#include <iostream>
+class City
 {
-    public:
+    private:
+    int fillPos;
     int id;
     int numNeighbours;
     int* neighbours;
     double* costs;
     double* highestCostEdges;
 
-    private:
-    int fillPos;
+public:
+City(){}
 
 // Constructor of class City
-city(int id, int numCities)
+City(int id, int numCities)
 {
     this->id = id;
     this->numNeighbours = numCities-1;
@@ -23,7 +25,7 @@ city(int id, int numCities)
 }
 
 // Deconstructor of class City
-~city()
+~City()
 {
     delete[] neighbours;
     delete[] costs;
@@ -73,15 +75,64 @@ double getHighestCostEdgesSum()
     return ( this->highestCostEdges[0] + this->highestCostEdges[1] ) ;
 }
 
-// Returns the neighbours of this city
-int* getNeighbours()
-{
-    return this->neighbours;
-}
 
-// Returns the costs of to the neighbours of this city
-double* getCost()
-{
-    return this->costs;
-}
+    // Setter and getter functions for id
+    void setId(int id) {
+        this->id = id;
+    }
+    int getId() const {
+        return id;
+    }
+
+    // Setter and getter functions for numNeighbours
+    void setNumNeighbours(int numNeighbours) {
+        this->numNeighbours = numNeighbours;
+    }
+    int getNumNeighbours() const {
+        return numNeighbours;
+    }
+
+    // Setter and getter functions for neighbours
+    void setNeighbours(int* neighbours) {
+        this->neighbours = neighbours;
+    }
+    int* getNeighbours() const {
+        return neighbours;
+    }
+
+    // Setter and getter functions for costs
+    void setCosts(double* costs) {
+        this->costs = costs;
+    }
+    double* getCosts() const {
+        return costs;
+    }
+
+    // Setter and getter functions for highestCostEdges
+    void setHighestCostEdges(double* highestCostEdges) {
+        this->highestCostEdges = highestCostEdges;
+    }
+    double* getHighestCostEdges() const {
+        return highestCostEdges;
+    }
+
+    // toString method
+    void toString() {
+        std::cout << "Node(id=" << this->id << ", numNeighbours=" << this->numNeighbours << ", neighbours=[";
+        for (int i = 0; i < this->numNeighbours; i++) {
+            std::cout << this->neighbours[i];
+            if (i < this->numNeighbours - 1) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << "], costs=[";
+        for (int i = 0; i < this->numNeighbours; i++) {
+            std::cout << this->costs[i];
+            if (i < this->numNeighbours - 1) {
+                std::cout << ", ";
+            }
+        }
+        std::cout << "], highestCostEdges=[" << this->highestCostEdges[0] << ", " << this->highestCostEdges[1] << "])";
+        return;
+    }
 };
