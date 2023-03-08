@@ -2,6 +2,9 @@
 #include <vector>
 #include"city.hpp"
 
+
+#ifndef TOUR_HPP
+#define TOUR_HPP
 class Tour {
     private:
         std::vector<int> tour;
@@ -58,10 +61,14 @@ class Tour {
         {
             this->cost = newCost;
         }
-
         double getCost()
         {
             return this->cost;
+        }
+
+        City getCurrCity()
+        {
+            return this->currCity;
         }
 
         void increaseSize()
@@ -93,3 +100,5 @@ class Tour {
         }
 
 };
+
+#endif

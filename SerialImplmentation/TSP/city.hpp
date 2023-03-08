@@ -1,6 +1,11 @@
 #include <iostream>
 #include <vector>
 
+//TODO verificar vizinhos atraves de custos para poupar acessos a memoria
+
+#ifndef CITY_HPP
+#define CITY_HPP
+
 class City {
     private:
         int nrNeighbours;
@@ -31,12 +36,13 @@ class City {
             costs.clear();
         }
 
+
         // Adds a neighbour to the 'neighbours' array and a cost at the same position on to the 'costs' array
         void addNeighbour(int neighbourId, double edgeCost)
         {
             neighbours.push_back(neighbourId);
             costs.push_back(edgeCost);
-            // printf("Neighbor added: id %d cost %lf\n", neighbours[nrNeighbours], costs[nrNeighbours]);
+            printf("Neighbor added: id %d cost %lf\n", neighbours[nrNeighbours], costs[nrNeighbours]);
             nrNeighbours++;
             updateLowestCostEdges(edgeCost);
         }
@@ -97,6 +103,7 @@ class City {
             return -1.0;
         } 
 
+
         // Setter and getter functions for id
         void setId(int city_id) {
             id = city_id;
@@ -152,3 +159,5 @@ class City {
             return;
         }
 };
+
+#endif

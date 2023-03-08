@@ -2,30 +2,39 @@
 
 #include <iostream>
 #include <cstring>
+#include <fstream>
+#include <sstream>
 #include <string>
+#include <iostream>
+#include <vector>
 #include"./nqueue/queue.hpp"
 #include"city.hpp"
 #include"tour.hpp"
 
 #define MAX_LINE_LENGTH 10
 #define NUM_COLLUMNS 3
-int NUMBER_ROWS;
-int NUM_CITIES;
 
 #define NA_VALUE -1
 
+int NUMBER_ROWS;
+int NUM_CITIES;
 City* cities;
 Tour bestTour;
 
 
-struct cmp_Tours
+class cmp_Tours
 {
-     bool compareTours(Tour tour_a, Tour tour_b) {
-        if ( tour_a.getBound() > tour_b.getBound() )
-        {
-            return true;
-        }
-        return false;
+    public:
+    bool operator()(Tour& tour_a, Tour& tour_b) {
+       if ( tour_a.getBound() > tour_b.getBound() )
+       {
+           return true;
+       }
+       else if ( tour_a.getBound() == tour_b.getBound() && tour_a.getCurrCity().getId() > tour_b.getCurrCity().getId() )   
+       {
+           return true;
+       }
+       return false;
     }
 };
 
@@ -45,7 +54,7 @@ void createCities()
     cities = new City[NUM_CITIES];
     for (int i = 0 ; i < NUM_CITIES ; i++ )
     {
-        cities[i] = City(i, NUM_CITIES);
+        cities[i] = *new City(i, NUM_CITIES);
     }
 }
 
@@ -61,6 +70,7 @@ void buildCity(FILE* fp)
     for (int i = 0; i < NUMBER_ROWS; i++) 
     {
         fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
+        
 
             // std::cout << "Cities: " << city1 << " <-> " << city2 << std::endl;
             // std::cout << "Cost " << edgeCost << std::endl;
@@ -74,15 +84,39 @@ void buildCity(FILE* fp)
 
 // Retrieves the data from the input file and stores it in the aproppriate variables
 void getMapData(char* filename)
-{
+{      
+
+    // std::string file = std::string(filename);
+    // std::ifstream file_data(file);
+
+
+
     FILE* fp = fopen(filename, "r");
 
-    if (checkFileConsistency(fp) == 1) 
+    if ( checkFileConsistency(fp) ) 
     {
         printf("Error: Unable to open file '%s'\n", filename);
-        return;
+        exit(1);
     }
 
+    // int num_cit,num_row;
+    // file_data >> num_cit >> num_row;
+    // int city1, city2;
+    // double edgeCost;
+        
+    // fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
+
+    // for (int i = 0; i < NUMBER_ROWS; i++) 
+    // {
+    //     // fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
+    //     // file_data >> city1  >> city2 >> edgeCost;
+
+    //         // std::cout << "Cities: " << city1 << " <-> " << city2 << std::endl;
+    //         // std::cout << "Cost " << edgeCost << std::endl;
+
+    //     cities[city1].addNeighbour(city2, edgeCost);
+    //     cities[city2].addNeighbour(city1, edgeCost);
+    // }
     buildCity(fp);
     fclose(fp);
 }
@@ -98,6 +132,14 @@ double computeInitialLowerBound()
     return ( lowerBound / 2);
 }
 
+// // Recomputes the LowerBound to new Tour
+// double recomputeLowerBound(double oldLowerBound, double roadCost, City oldCity, City newCity)
+// {
+//     return (oldLowerBound + roadCost - ( oldCity.getHigherLowerCostEdge ) / 2 );
+//     return ( oldLowerBound + roadCost - (getHighestTruncatedEdge(roadCost, oldCityIndex) + getHighestTruncatedEdge(roadCost, newCityIndex)) / 2); 
+// }
+
+
 //  Core Function
 Tour tsp(char* filename, double maxTourCost)
 {
@@ -108,45 +150,56 @@ Tour tsp(char* filename, double maxTourCost)
     // }
 
     double initialLowerBound = computeInitialLowerBound();
+    std::cout << "----------------------" << initialLowerBound << std::endl;
     double recomputedLowerBound;
 
     bestTour = Tour( NA_VALUE, maxTourCost, NA_VALUE, City(-1,-1));
 
-    bestTour.toString();
+    // bestTour.toString();
 
-    PriorityQueue<Tour, cmp_Tours> travel = PriorityQueue<Tour, cmp_Tours>();
-    // travel.push(Tour(NUM_CITIES, 0, initialLowerBound, 0));
+    PriorityQueue<Tour, cmp_Tours> journey;
 
-    // Tour t = travel.pop();
-    // t.toString();
-    while ( travel.size() != 0 )
+
+
+    std::cout << "----------------------" << std::endl;
+
+    journey.push(Tour(NUM_CITIES, 0, initialLowerBound, City(0, NUM_CITIES)));
+
+
+    for ( int i = 0; i < journey.size() ; i++ )
     {
-        
-        Tour currTour = travel.pop();
-
-
-        if ( currTour.getBound() >= bestTour.getCost() )
-        {
-            return bestTour;
-        }
-        if( currTour.getSize() == NUM_CITIES )
-        {
-            if ( //currTour.connectsToBase() &&
-                ( currTour.getCost() + currTour.getRoadCostTo(0) < bestTour.getCost() ))
-            {
-                bestTour.addCity(City(0, NA_VALUE), currTour.getRoadCostTo(0));
-            }
-        }
-        else
-        {
-            // get Unvisited Neighbours
-
-        }
-        
-        // delete &currTour;
-        currTour.~Tour();
-
+        journey.pop().toString();
     }
+
+    // while ( travel.size() != 0 )
+    // {
+        
+    //     Tour currTour = travel.pop();
+
+
+    //     if ( currTour.getBound() >= bestTour.getCost() )
+    //     {
+    //         return bestTour;
+    //     }
+    //     if( currTour.getSize() == NUM_CITIES )
+    //     {
+    //         if ( //currTour.connectsToBase() &&
+    //             ( currTour.getCost() + currTour.getRoadCostTo(0) < bestTour.getCost() ))
+    //         {
+    //             bestTour.addCity(City(0, NA_VALUE), currTour.getRoadCostTo(0));
+    //         }
+    //     }
+    //     else
+    //     {
+    //         // get Unvisited Neighbours
+    //         //
+
+    //     }
+        
+    //     // delete &currTour;
+    //     currTour.~Tour();
+
+    // }
 
     std::cout << "FIM" << std::endl;
     return bestTour;
