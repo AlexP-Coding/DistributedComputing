@@ -84,9 +84,17 @@ class City {
         }
 
         // Returns the highst cost edge of the two lowest ones
-        double getHigherLowerCostEdge()
+        double getHigherLowerTruncatedCostEdge(double roadCost)
         {
-            return this->getHighestCostEdges()[1];
+            double edge = -1;
+            for ( int i = 0 ; i < 2 ; i++ )
+            {
+                if ( this->getLowestCostEdges()[i] > edge && this->getLowestCostEdges()[i] <= roadCost )
+                {
+                    edge = this->getLowestCostEdges()[i];
+                }
+            }
+            return edge;
         }
 
 
@@ -133,6 +141,7 @@ class City {
         void setCosts(std::vector<double> city_costs) {
             costs = city_costs;
         }
+
         std::vector<double> getCosts() const {
             return costs;
         }
@@ -141,7 +150,8 @@ class City {
         void setHighestCostEdges(double* city_highestCostEdges) {
             lowestCostEdges = city_highestCostEdges;
         }
-        double* getHighestCostEdges() const {
+
+        double* getLowestCostEdges() const {
             return lowestCostEdges;
         }
     
