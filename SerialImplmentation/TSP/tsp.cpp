@@ -85,12 +85,6 @@ void buildCity(FILE* fp)
 // Retrieves the data from the input file and stores it in the aproppriate variables
 void getMapData(char* filename)
 {      
-
-    // std::string file = std::string(filename);
-    // std::ifstream file_data(file);
-
-
-
     FILE* fp = fopen(filename, "r");
 
     if ( checkFileConsistency(fp) ) 
@@ -98,25 +92,6 @@ void getMapData(char* filename)
         printf("Error: Unable to open file '%s'\n", filename);
         exit(1);
     }
-
-    // int num_cit,num_row;
-    // file_data >> num_cit >> num_row;
-    // int city1, city2;
-    // double edgeCost;
-        
-    // fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
-
-    // for (int i = 0; i < NUMBER_ROWS; i++) 
-    // {
-    //     // fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
-    //     // file_data >> city1  >> city2 >> edgeCost;
-
-    //         // std::cout << "Cities: " << city1 << " <-> " << city2 << std::endl;
-    //         // std::cout << "Cost " << edgeCost << std::endl;
-
-    //     cities[city1].addNeighbour(city2, edgeCost);
-    //     cities[city2].addNeighbour(city1, edgeCost);
-    // }
     buildCity(fp);
     fclose(fp);
 }
@@ -144,29 +119,21 @@ double computeInitialLowerBound()
 Tour tsp(char* filename, double maxTourCost)
 {
     getMapData(filename);
-    // for ( int i = 0 ; i < NUM_CITIES ; i++ )
-    // {
-    //     cities[i].toString();
-    // }
 
     double initialLowerBound = computeInitialLowerBound();
-    std::cout << "----------------------" << initialLowerBound << std::endl;
     double recomputedLowerBound;
 
     bestTour = Tour( NA_VALUE, maxTourCost, NA_VALUE, City(-1,-1));
-
     // bestTour.toString();
 
     PriorityQueue<Tour, cmp_Tours> journey;
-
-
 
     std::cout << "----------------------" << std::endl;
 
     journey.push(Tour(NUM_CITIES, 0, initialLowerBound, City(0, NUM_CITIES)));
 
-
-    for ( int i = 0; i < journey.size() ; i++ )
+    int s = journey.size();
+    for ( int i = 0; i < s ; i++ )
     {
         journey.pop().toString();
     }
