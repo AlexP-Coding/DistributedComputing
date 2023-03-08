@@ -71,17 +71,37 @@ class City {
             }
         }
 
+        // Returns the sum of the two lowest cost edges
         double getLowestCostEdgesSum()
         {
-            std::cout << "1 -> " << lowestCostEdges[0] << " --- 2 -> " << lowestCostEdges[1] << std::endl;
             return ( lowestCostEdges[0] + lowestCostEdges[1] ) ;
         }
 
+        // Returns the highst cost edge of the two lowest ones
+        double getHigherLowerCostEdge()
+        {
+            return this->getHighestCostEdges()[1];
+        }
+
+
+        // Returns the road cost between two cities. -1 if the connection doesnt exist
+        double getRoadCost(int neighbour)
+        {
+            for ( int i = 0 ; i < nrNeighbours ; i++ )
+            {
+                if ( this->neighbours[i] == neighbour )
+                {
+                    return this->costs[i];
+                }
+            }
+            return -1.0;
+        } 
 
         // Setter and getter functions for id
         void setId(int city_id) {
             id = city_id;
         }
+
         int getId() const {
             return id;
         }
