@@ -8,7 +8,7 @@ class City {
         int maxNeighbours;
         std::vector<int> neighbours;
         std::vector<double> costs;
-        double* highestCostEdges;
+        double* lowestCostEdges;
 
     public:
         City(){}
@@ -18,7 +18,9 @@ class City {
         {
             id = city_id;
             maxNeighbours = numCities-1;
-            highestCostEdges = new double[2];
+            lowestCostEdges = new double[2];
+            lowestCostEdges[0] = 1000000.0;
+            lowestCostEdges[1] = 1000000.0;
             nrNeighbours=0;
         }
 
@@ -34,9 +36,9 @@ class City {
         {
             neighbours.push_back(neighbourId);
             costs.push_back(edgeCost);
-            printf("Neighbor added: id %d cost %lf\n", neighbours[nrNeighbours], costs[nrNeighbours]);
+            // printf("Neighbor added: id %d cost %lf\n", neighbours[nrNeighbours], costs[nrNeighbours]);
             nrNeighbours++;
-            updateHighestCostEdges(edgeCost);
+            updateLowestCostEdges(edgeCost);
         }
 
         // Returns the road cost between this city and the city specified by the 'neighbourId' argument
@@ -53,25 +55,26 @@ class City {
         }
 
         // Checks to see if the received edge id bigger than the ones already stored. If so it changes the smallest
-        void updateHighestCostEdges(double newEdge)
+        void updateLowestCostEdges(double newEdge)
         {
-            if( newEdge > highestCostEdges[0] )
+            if( newEdge < lowestCostEdges[0] )
             {
-                highestCostEdges[1] = highestCostEdges[0];
-                highestCostEdges[0] = newEdge;
+                lowestCostEdges[1] = lowestCostEdges[0];
+                lowestCostEdges[0] = newEdge;
             }
             else
             {
-                if ( newEdge > highestCostEdges[1] )
+                if ( newEdge < lowestCostEdges[1] )
                 {
-                    highestCostEdges[1] = newEdge;
+                    lowestCostEdges[1] = newEdge;
                 }
             }
         }
 
-        double getHighestCostEdgesSum()
+        double getLowestCostEdgesSum()
         {
-            return (highestCostEdges[0] + highestCostEdges[1] ) ;
+            std::cout << "1 -> " << lowestCostEdges[0] << " --- 2 -> " << lowestCostEdges[1] << std::endl;
+            return ( lowestCostEdges[0] + lowestCostEdges[1] ) ;
         }
 
 
@@ -109,10 +112,10 @@ class City {
     
         // Setter and getter functions for highestCostEdges
         void setHighestCostEdges(double* city_highestCostEdges) {
-            highestCostEdges = city_highestCostEdges;
+            lowestCostEdges = city_highestCostEdges;
         }
         double* getHighestCostEdges() const {
-            return highestCostEdges;
+            return lowestCostEdges;
         }
     
         // toString method
@@ -125,7 +128,7 @@ class City {
             for (int i = 0; i < maxNeighbours; i++) {
                 printf("%lf, ", costs[i]);
             }
-            printf("], highestCostEdges=[%lf, %lf])\n", highestCostEdges[0], highestCostEdges[1]);
+            printf("], highestCostEdges=[%lf, %lf])\n", lowestCostEdges[0], lowestCostEdges[1]);
             return;
         }
 };

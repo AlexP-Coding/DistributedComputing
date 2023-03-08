@@ -43,25 +43,22 @@ void buildCity(FILE* fp)
     {
         fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
 
-        std::cout << "Cities: " << city1 << " <-> " << city2 << std::endl;
-        std::cout << "Cost " << edgeCost << std::endl;
+            // std::cout << "Cities: " << city1 << " <-> " << city2 << std::endl;
+            // std::cout << "Cost " << edgeCost << std::endl;
 
         cities[city1].addNeighbour(city2, edgeCost);
         cities[city2].addNeighbour(city1, edgeCost);
     }
-    std::cout << "All Cities Built!!!" << std::endl;
+    // std::cout << "All Cities Built!!!" << std::endl;
 
-    for ( int i = 0 ; i < NUM_CITIES ; i++ )
-    {
-        cities[i].toString();
-    }
 }
 
 void getMapData(char* filename)
 {
     FILE* fp = fopen(filename, "r");
 
-    if (checkFileConsistency(fp) == 1) {
+    if (checkFileConsistency(fp) == 1) 
+    {
         printf("Error: Unable to open file '%s'\n", filename);
         return;
     }
@@ -70,16 +67,36 @@ void getMapData(char* filename)
     fclose(fp);
 }
 
+double computeInitialLowerBound()
+{
+    double lowerBound = 0;
+    for ( int i = 0 ; i < NUM_CITIES  ; i++ )
+    {
+        lowerBound = lowerBound + cities[i].getLowestCostEdgesSum();
+    }
+    return ( lowerBound / 2);
+}
+
 //  Core Function
 int tsp(char* filename, double maxTourCost)
 {
     getMapData(filename);
+    // for ( int i = 0 ; i < NUM_CITIES ; i++ )
+    // {
+    //     cities[i].toString();
+    // }
+
+    double initialLowerBound = computeInitialLowerBound();
+
+    std::cout << initialLowerBound << "------------\n";
+
     return 0;
 }
 
 
 // main
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
     tsp(argv[1], atof(argv[2]));
     return 0;
 }
