@@ -90,6 +90,19 @@ void getMapData(char* filename)
     fclose(fp);
 }
 
+Tour getNewTour(Tour oldTour, City newCity,double roadCost, double newBound)
+{
+    Tour newTour = Tour(
+        oldTour.getCost(),
+        newBound,
+        newCity
+    );
+
+    newTour.setTour(oldTour.getTour());
+    newTour.addCity(newCity, roadCost, newBound);
+    return newTour;
+}
+
 // Computes the inicial lower bound
 double computeInitialLowerBound()
 {
@@ -116,103 +129,58 @@ Tour tsp(char* filename, double maxTourCost)
     double initialLowerBound = computeInitialLowerBound();
     double recomputedLowerBound;
 
-    bestTour = Tour( NA_VALUE, maxTourCost, NA_VALUE, City(-1,-1));
+    bestTour = Tour(maxTourCost, NA_VALUE, City(-1,-1));
     PriorityQueue<Tour, cmp_Tours> journey;
     std::cout << "----------------------" << std::endl;
-    journey.push(Tour(NUM_CITIES, 0, initialLowerBound, cities[0]));
+    journey.push(Tour(0, initialLowerBound, cities[0]));
     int s = journey.size();
     
 
-    int* aaa;
-    Tour currTour;
-   
-    currTour = journey.pop();
-    currTour.toString();
-
-
-    int n = 0;
-    // std::cout << "ada" << n << std::endl;
-    // currTour.t(&n);
-    // std::cout << "ada" << n << std::endl;
-
-    aaa = currTour.getUnvisitedCities(&n);
-    std::cout << "NUMBER -> " << n << std::endl;
-    for ( int i = 0 ; i < n ; i++ )
+    while ( journey.size() != 0 )
     {
-        std::cout << aaa[i] << std::endl;
+        Tour currTour = journey.pop();
+
+        currTour.toString();
+
+        if ( currTour.getBound() >= bestTour.getCost() )
+        {
+            bestTour.toString();
+            return bestTour;
+        }
+        if( currTour.getSize() == NUM_CITIES )
+        {
+            if ( //currTour.connectsToBase() &&
+                ( currTour.getCost() + currTour.getRoadCostTo(0) < bestTour.getCost() ))
+            {
+                double roadCostToZero = currTour.getRoadCostTo(0);
+                bestTour.addCity(cities[0], roadCostToZero, recomputeLowerBound(currTour.getBound(), roadCostToZero, currTour.getCurrCity(), cities[0]));
+            }
+        }
+        else
+        {
+            int unvNeiNumber;
+            int* unvisitedNeighbours = currTour.getUnvisitedCities(&unvNeiNumber);
+            for ( int i = 0 ; i < unvNeiNumber ; i++ )
+            {
+                recomputedLowerBound = recomputeLowerBound(
+                    currTour.getBound(),
+                    currTour.getRoadCostTo(unvisitedNeighbours[i]),
+                    currTour.getCurrCity(),
+                    cities[unvisitedNeighbours[i]]
+                );
+                if ( recomputedLowerBound > bestTour.getCost() )
+                {
+                    continue;
+                }
+                short roadCost = currTour.getCurrCity().getRoadCost(unvisitedNeighbours[i]);
+                journey.push(getNewTour(currTour, cities[unvisitedNeighbours[i]], roadCost, recomputedLowerBound));
+                std::cout << "??????????????????" << std::endl;
+            }
+            free(unvisitedNeighbours);
+        }
+        currTour.~Tour();
     }
-    std::cout << "-------------------------" << std::endl;
-
-    currTour.addCity(cities[2], 34, 56);
-    currTour.toString();
-    aaa = currTour.getUnvisitedCities(&n);
-    std::cout << "NUMBER -> " << n << std::endl;
-    for ( int i = 0 ; i < n; i++ )
-    {
-        std::cout << aaa[i] << std::endl;
-    }
-    std::cout << "-------------------------" << std::endl;
-
-    currTour.addCity(cities[3], 2, 26);
-    currTour.toString();
-    aaa = currTour.getUnvisitedCities(&n);
-    std::cout << "NUMBER -> " << n << std::endl;
-    for ( int i = 0 ; i < n ; i++ )
-    {
-        std::cout << aaa[i] << std::endl;
-    }
-    std::cout << "-------------------------" << std::endl;
-
-
-
-
-
-
-
-
-
-
-    // for ( int i = 0; i < s ; i++ )
-    // {
-    //     journey.pop().toString();
-    // }
-
-    // while ( journey.size() != 0 )
-    // {
-    //     Tour currTour = journey.pop();
-
-
-    //     if ( currTour.getBound() >= bestTour.getCost() )
-    //     {
-    //         return bestTour;
-    //     }
-    //     if( currTour.getSize() == NUM_CITIES )
-    //     {
-    //         if ( //currTour.connectsToBase() &&
-    //             ( currTour.getCost() + currTour.getRoadCostTo(0) < bestTour.getCost() ))
-    //         {
-    //             double roadCostToZero = currTour.getRoadCostTo(0);
-    //             bestTour.addCity(cities[0], roadCostToZero, recomputeLowerBound(currTour.getBound(), roadCostToZero, currTour.getCurrCity(), cities[0]));
-    //         }
-    //     }
-    //     else
-    //     {
-    //         int* unvisitedNeighbours = currTour.getUnvisitedCities();
-    //         int unvNeiNumber = currTour.getCurrCity().getNrNeighbours();
-    //         for ( int i = 0 ; i < unvNeiNumber ; i++ )
-    //         {
-    //             recomputedLowerBound = recomputeLowerBound();
-    //             if ( recomputedLowerBound > bestTour.getCost() )
-    //             {
-    //                 continue;
-    //             }
-    //             short roadCost = currTour.getCurrCity().getRoadCost(unvisitedNeighbours[i]);
-    //             journey.push();
-    //         }
-    //         free(unvisitedNeighbours);
-    //     }
-    //     currTour.~Tour();
-    // }
+    bestTour.toString();
     std::cout << "FIM" << std::endl;
     return bestTour;
 }

@@ -17,7 +17,7 @@ class Tour {
         Tour(){}
 
         // Constructor of class City
-        Tour(int numCities, double cost, double bound, City currCity)
+        Tour(double cost, double bound, City currCity)
         {   
             this->tour.push_back(currCity.getId());
             this->bound = bound;
@@ -34,9 +34,9 @@ class Tour {
         }
 
         // Adds a city to the tour
-        void addCity(City newCity, double newCost, double newBound)
+        void addCity(City newCity, double roadCost, double newBound)
         {
-            this->addCost(newCost);
+            this->addCost(roadCost);
             this->tour.push_back(newCity.getId());
             this->setCurrCity(newCity);
             this->increaseSize();
@@ -48,7 +48,6 @@ class Tour {
         {
             int* unvisitedNeighbours = (int*) malloc(sizeof(int) * this->getCurrCity().getNrNeighbours());
             int pos = 0;
-            std::cout << "NUMBER -> " << this->getCurrCity().getNrNeighbours() << std::endl;
             for ( int i = 0 ; i < this->getCurrCity().getNrNeighbours() ; i++ )
             {
                 if (!hasBeenTraversed(this->getCurrCity().getNeighbours()[i]))
@@ -84,6 +83,11 @@ class Tour {
         void addCost(double newCost)
         {
             this->setCost( this->getCost() + newCost );
+        }
+
+        void setTour(std::vector<int> tour)
+        {  
+            this->tour = tour;
         }
 
         std::vector<int> getTour()
