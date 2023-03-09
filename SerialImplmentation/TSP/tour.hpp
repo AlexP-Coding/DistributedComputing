@@ -40,6 +40,7 @@ class Tour {
             this->setCurrCity(newCity);
             this->increaseSize();
             this->setBound(newBound);
+
         }
 
         // Returns the neighbours of a city that have not been traversed yet

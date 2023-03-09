@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
-//TODO verificar vizinhos atraves de custos para poupar acessos a memoria
-//TODO verificar se quando os arrays sao formados, ao ler do ficheiro, as cidades ja estam por ordem
+//TODO: verificar vizinhos atraves de custos para poupar acessos a memoria
+//TODO: verificar se quando os arrays sao formados, ao ler do ficheiro, as cidades ja estao por ordem
 
 #ifndef CITY_HPP
 #define CITY_HPP

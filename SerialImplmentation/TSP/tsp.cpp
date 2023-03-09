@@ -121,9 +121,13 @@ Tour getNewTour(Tour oldTour, City newCity,double roadCost, double newBound)
     newTour.setSize(oldTour.getSize());
     newTour.setCost(oldTour.getCost());
     newTour.setBound(newBound);
+
+
+    // std::cout << "Adding " << newCity.getId() << " from " << newTour.getCurrCity().getId() << " ; Cost to add: " << roadCost << std::endl;
+
     newTour.setCurrCity(newCity);
 
-
+    
     newTour.addCity(newCity, roadCost, newBound);
     return newTour;
 }
@@ -175,11 +179,11 @@ Tour tsp(char* filename, double maxTourCost)
         {
             int unvNeiNumber;
             int* unvisitedNeighbours = currTour.getUnvisitedCities(&unvNeiNumber);
-            std::cout << unvNeiNumber  << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+            // std::cout << unvNeiNumber  << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             for ( int i = 0 ; i < unvNeiNumber ; i++ )
             {
                 
-                std::cout << " . " << std::endl;
+                // std::cout << " . " << std::endl;
                 
                 // for ( int i = 0 ; i < unvNeiNumber ; i++)
                 // {
@@ -201,7 +205,7 @@ Tour tsp(char* filename, double maxTourCost)
                 {
                     continue;
                 }
-                short roadCost = currTour.getRoadCostTo(cities[unvisitedNeighbours[i]].getId());
+                double roadCost = currTour.getRoadCostTo(cities[unvisitedNeighbours[i]].getId());
                 journey.push(getNewTour(currTour, cities[unvisitedNeighbours[i]], roadCost, recomputedLowerBound));
             }
             // std::cout << "Free unvisited Neighbours "<< std::endl;
