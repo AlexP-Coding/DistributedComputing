@@ -186,12 +186,17 @@ int main(int argc, char *argv[])
 
     // exec_time = -omp_get_wtime();
 
-    Tour result = tsp(atof(argv[2]));
+    Tour resultTour = tsp(atof(argv[2]));
 
     // exec_time += omp_get_wtime();
     // fprintf(stderr, "%.1fs\n", exec_time);
 
-    std::cout << result.getCost() << std::endl;
-    result.printTour();
-    return 0;
+    if ( resultTour.getCost() != NA_VALUE ){
+        std::cout << resultTour.getCost() << std::endl;
+        resultTour.printTour();
+    }else
+    {
+        std::cout << "NO SOLUTION" << std::endl;
+    }
+    exit(0);
 }
