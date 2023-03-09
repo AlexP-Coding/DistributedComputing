@@ -15,6 +15,7 @@ class City {
         std::vector<int> neighbours;
         std::vector<double> costs;
         double* lowestCostEdges;
+        int connectsToStart;
 
     public:
         City(){}
@@ -28,6 +29,7 @@ class City {
             lowestCostEdges[0] = 1000000.0;
             lowestCostEdges[1] = 1000000.0;
             nrNeighbours=0;
+            connectsToStart = 0;
         }
 
         // Deconstructor of class City
@@ -46,6 +48,11 @@ class City {
             // printf("Neighbor added: id %d cost %lf\n", neighbours[nrNeighbours], costs[nrNeighbours]);
             nrNeighbours++;
             updateLowestCostEdges(edgeCost);
+            
+            if( neighbourId == 0 )
+            {
+                this->connectsToStart = 1;
+            }
         }
 
         // Returns the road cost between this city and the city specified by the 'neighbourId' argument
@@ -100,11 +107,11 @@ class City {
 
 
         // Returns the road cost between two cities. -1 if the connection doesnt exist
-        double getRoadCost(int neighbour)
+        double getRoadCost(int neighbourId)
         {
             for ( int i = 0 ; i < nrNeighbours ; i++ )
             {
-                if ( this->neighbours[i] == neighbour )
+                if ( this->neighbours[i] == neighbourId )
                 {
                     return this->costs[i];
                 }
@@ -112,6 +119,10 @@ class City {
             return -1.0;
         } 
 
+
+        int getConnectsToStart() const {
+            return this->connectsToStart;
+        }
 
         // Setter and getter functions for id
         void setId(int city_id) {
@@ -155,7 +166,7 @@ class City {
         double* getLowestCostEdges() const {
             return lowestCostEdges;
         }
-    
+        
         // toString method
         void toString() {
             printf("Node (id = %d, nrNeighbours = %d, neighbours = [", id, nrNeighbours);

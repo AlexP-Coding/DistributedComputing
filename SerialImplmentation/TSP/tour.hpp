@@ -30,7 +30,6 @@ class Tour {
         ~Tour()
         {
             this->tour.clear();
-            this->getCurrCity().~City();
         }
 
         // Adds a city to the tour
@@ -77,7 +76,7 @@ class Tour {
 
         double getRoadCostTo(int newCity)
         {
-            return this->currCity.getCosts()[newCity];
+            return this->currCity.getRoadCost(newCity);
         }
 
         void addCost(double newCost)
@@ -137,6 +136,15 @@ class Tour {
         void setCurrCity(City newCity)
         {
             this->currCity = newCity;
+        }
+
+        void printTour()
+        {
+            for ( int city : this->tour)
+            {
+                std::cout << city << " ";
+            }
+            std::cout << std::endl;
         }
 
         void toString() const

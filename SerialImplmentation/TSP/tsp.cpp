@@ -105,11 +105,11 @@ double computeInitialLowerBound()
 // Recomputes the LowerBound to new Tour
 double recomputeLowerBound(double oldLowerBound, double roadCost, City oldCity, City newCity)
 {  
-    std::cout << "old Lower Bound " << oldLowerBound << std::endl;
-    std::cout << "Road Cost " << roadCost << std::endl;
-    std::cout << "old city " << oldCity.getId() << std::endl;
-    std::cout << "new city S" << newCity.getId() << std::endl;
-    std::cout << "---------------------BUG" << std::endl;
+    // std::cout << "old Lower Bound " << oldLowerBound << std::endl;
+    // std::cout << "Road Cost " << roadCost << std::endl;
+    // std::cout << "old city " << oldCity.getId() << std::endl;
+    // std::cout << "new city S" << newCity.getId() << std::endl;
+    // std::cout << "---------------------BUG" << std::endl;
     return (oldLowerBound + roadCost - ( oldCity.getHigherLowerTruncatedCostEdge(roadCost) + newCity.getHigherLowerTruncatedCostEdge(roadCost)) / 2 );
 }
 
@@ -141,21 +141,29 @@ Tour tsp(char* filename, double maxTourCost)
     // std::cout << "----------------------" << std::endl;
     journey.push(Tour(0, initialLowerBound, cities[0]));
 
+
+
+    // for ( int i = 0 ; i < NUM_CITIES ; i++ )
+    // {
+    //     std::cout << "City : " << i << std::endl;
+    //     cities[i].toString();
+
+    // }
     while ( journey.size() > 0 )
     {
         Tour currTour = journey.pop();
 
-        currTour.toString();
+        // currTour.toString();
 
         if ( currTour.getBound() >= bestTour.getCost() )
         {
             std::cout << "Return Best" << std::endl;
-            bestTour.toString();
+            // bestTour.toString();
             return bestTour;
         }
         if( currTour.getSize() == NUM_CITIES )
         {
-            if ( //currTour.connectsToBase() &&
+            if ( currTour.getCurrCity().getConnectsToStart() == 1 &&
                 ( currTour.getCost() + currTour.getRoadCostTo(0) < bestTour.getCost() ))
             {
                 std::cout << "Best Updated" << std::endl;
@@ -167,19 +175,20 @@ Tour tsp(char* filename, double maxTourCost)
         {
             int unvNeiNumber;
             int* unvisitedNeighbours = currTour.getUnvisitedCities(&unvNeiNumber);
+            std::cout << unvNeiNumber  << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
             for ( int i = 0 ; i < unvNeiNumber ; i++ )
             {
-    std::cout << "--------------------- DE" << std::endl;
-                std::cout << "Current city: " << currTour.getCurrCity().getId();
-                std::cout << " | Next city to Visit : " << unvisitedNeighbours[i] ;
-                std::cout << " | check : " << cities[unvisitedNeighbours[i]].getId() << std::endl ;
                 
-                for ( int i = 0 ; i < currTour.getCurrCity().getNrNeighbours() ; i++)
-                {
-                    std::cout << currTour.getCurrCity().getCosts()[i] << " - ";
-                    std::cout << currTour.getRoadCostTo(unvisitedNeighbours[i]) << " - ";
-                    std::cout << currTour.getCurrCity().getRoadCost(unvisitedNeighbours[i]) << std::endl;
-                }
+                std::cout << " . " << std::endl;
+                
+                // for ( int i = 0 ; i < unvNeiNumber ; i++)
+                // {
+                
+                //     std::cout << "------------------------------------------" << std::endl;
+                //     std::cout << currTour.getCurrCity().getCosts()[i] << " - ";
+                //     std::cout << currTour.getRoadCostTo(unvisitedNeighbours[i]) << " - ";
+                //     std::cout << currTour.getCurrCity().getRoadCost(unvisitedNeighbours[i]) << std::endl;
+                // }
 
                 recomputedLowerBound = recomputeLowerBound(
                     currTour.getBound(),
@@ -187,23 +196,22 @@ Tour tsp(char* filename, double maxTourCost)
                     currTour.getCurrCity(),
                     cities[unvisitedNeighbours[i]]
                 );
-                std::cout << "  -> Recomputed Bound : " << recomputedLowerBound << std::endl;
+                // std::cout << "  -> Recomputed Bound : " << recomputedLowerBound << std::endl;
                 if ( recomputedLowerBound > bestTour.getCost() )
                 {
                     continue;
                 }
-                // TODO provavelmente vou ter de verificar se existem unvisited neighbours para este no
-                short roadCost = currTour.getCurrCity().getRoadCost(cities[unvisitedNeighbours[i]].getId());
+                short roadCost = currTour.getRoadCostTo(cities[unvisitedNeighbours[i]].getId());
                 journey.push(getNewTour(currTour, cities[unvisitedNeighbours[i]], roadCost, recomputedLowerBound));
             }
-            std::cout << "Free unvisited Neighbours "<< std::endl;
+            // std::cout << "Free unvisited Neighbours "<< std::endl;
             free(unvisitedNeighbours);
         }
+        // TODO: FALTA CONSEGUIR libertar a memoria da tour que vamos deixar de usar!!!!
         // currTour.~Tour();
-        std::cout << "Freed currTour "<< std::endl;
-
+        // std::cout << "Freed currTour "<< std::endl;
     }
-    bestTour.toString();
+
     std::cout << "FIM" << std::endl;
     return bestTour;
 }
@@ -211,41 +219,9 @@ Tour tsp(char* filename, double maxTourCost)
 // main
 int main(int argc, char *argv[]) 
 {
-    tsp(argv[1], atof(argv[2]));
+    Tour result = tsp(argv[1], atof(argv[2]));
+
+    std::cout << result.getCost() << std::endl;
+    result.printTour();
     return 0;
 }
-
-
-
-// -------------------------
-
-
-// Tour currTour = journey.pop();
-
-// currTour.toString();
-
-// currTour = getNewTour(currTour, cities[2], 1, 18);
-
-// currTour.toString();
-
-// currTour = getNewTour(currTour, cities[1], 11, 20);
-
-// currTour.toString();
-
-// currTour = getNewTour(currTour, cities[3], 3, 20);
-
-// currTour.toString();
-
-
-// if( currTour.getSize() == NUM_CITIES )
-//     {
-//         if ( //currTour.connectsToBase() &&
-//             ( currTour.getCost() + currTour.getRoadCostTo(0) < bestTour.getCost() ))
-//         {
-//             double roadCostToZero = currTour.getRoadCostTo(0);
-//             bestTour = getNewTour(currTour, cities[0], roadCostToZero, currTour.getBound());
-        
-//         }
-//     }
-
-// // -------------------------
