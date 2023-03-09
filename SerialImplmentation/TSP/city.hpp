@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 
-//TODO verificar vizinhos atraves de custos para poupar acessos a memoria
-//TODO verificar se quando os arrays sao formados, ao ler do ficheiro, as cidades ja estam por ordem
+//TODO: verificar vizinhos atraves de custos para poupar acessos a memoria
+//TODO: verificar se quando os arrays sao formados, ao ler do ficheiro, as cidades ja estao por ordem
 
 #ifndef CITY_HPP
 #define CITY_HPP
@@ -45,10 +45,9 @@ class City {
         {
             neighbours.push_back(neighbourId);
             costs.push_back(edgeCost);
-            // printf("Neighbor added: id %d cost %lf\n", neighbours[nrNeighbours], costs[nrNeighbours]);
             nrNeighbours++;
             updateLowestCostEdges(edgeCost);
-            
+
             if( neighbourId == 0 )
             {
                 this->connectsToStart = 1;
@@ -105,7 +104,6 @@ class City {
             return edge;
         }
 
-
         // Returns the road cost between two cities. -1 if the connection doesnt exist
         double getRoadCost(int neighbourId)
         {
@@ -119,12 +117,12 @@ class City {
             return -1.0;
         } 
 
+        /* Setters and Getters */
 
         int getConnectsToStart() const {
             return this->connectsToStart;
         }
 
-        // Setter and getter functions for id
         void setId(int city_id) {
             id = city_id;
         }
@@ -167,7 +165,8 @@ class City {
             return lowestCostEdges;
         }
         
-        // toString method
+        /* Printters */
+
         void toString() {
             printf("Node (id = %d, nrNeighbours = %d, neighbours = [", id, nrNeighbours);
             for (int i = 0; i < nrNeighbours; i++) {

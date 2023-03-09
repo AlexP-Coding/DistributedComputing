@@ -32,7 +32,7 @@ class Tour {
             this->tour.clear();
         }
 
-        // Adds a city to the tour
+        // Adds a city to this tour
         void addCity(City newCity, double roadCost, double newBound)
         {
             this->addCost(roadCost);
@@ -43,6 +43,7 @@ class Tour {
         }
 
         // Returns the neighbours of a city that have not been traversed yet
+        // and changes the value pointed by the 'numUnvisCities' by the number of neighbours
         int* getUnvisitedCities(int* numUnvisCities)
         {
             int* unvisitedNeighbours = (int*) malloc(sizeof(int) * this->getCurrCity().getNrNeighbours());
@@ -83,6 +84,9 @@ class Tour {
         {
             this->setCost( this->getCost() + newCost );
         }
+
+
+        /* Setters and Getter*/
 
         void setTour(std::vector<int> tour)
         {  
@@ -137,6 +141,9 @@ class Tour {
         {
             this->currCity = newCity;
         }
+
+
+        /* Printters */
 
         void printTour()
         {
