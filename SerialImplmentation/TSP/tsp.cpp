@@ -108,11 +108,10 @@ double computeInitialLowerBound()
 }
 
 // Recomputes the LowerBound to new Tour
-// double recomputeLowerBound(double oldLowerBound, double roadCost, City oldCity, City newCity)
-// {
-//     return (oldLowerBound + roadCost - ( oldCity.getHigherLowerTruncatedCostEdge ) / 2 );
-//     // return ( oldLowerBound + roadCost - (getHighestTruncatedEdge(roadCost, oldCityIndex) + getHighestTruncatedEdge(roadCost, newCityIndex)) / 2); 
-// }
+double recomputeLowerBound(double oldLowerBound, double roadCost, City oldCity, City newCity)
+{
+    return (oldLowerBound + roadCost - ( oldCity.getHigherLowerTruncatedCostEdge(roadCost) + newCity.getHigherLowerTruncatedCostEdge(roadCost)) / 2 );
+}
 
 
 //  Core Function
@@ -135,17 +134,19 @@ Tour tsp(char* filename, double maxTourCost)
     int s = journey.size();
     
     
-    std::cout << cities[3].getHigherLowerTruncatedCostEdge(4) << std::endl ;
+    std::cout << recomputeLowerBound(18, 5, cities[0], cities[3]) << std::endl;
+    std::cout << recomputeLowerBound(18, 7, cities[3], cities[2]) << std::endl;
+    std::cout << recomputeLowerBound(19, 11, cities[2], cities[1]) << std::endl;
 
     // for ( int i = 0; i < s ; i++ )
     // {
     //     journey.pop().toString();
     // }
 
-    // while ( travel.size() != 0 )
+    // while ( journey.size() != 0 )
     // {
         
-    //     Tour currTour = travel.pop();
+    //     Tour currTour = journey.pop();
 
 
     //     if ( currTour.getBound() >= bestTour.getCost() )
