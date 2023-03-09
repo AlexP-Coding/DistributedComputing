@@ -1,5 +1,3 @@
-// Your First C++ Program
-
 #include <iostream>
 #include <cstring>
 #include <fstream>
@@ -21,7 +19,7 @@ int NUM_CITIES;
 City* cities;
 Tour bestTour;
 
-
+// Class stores the compare function for the priority queue
 class cmp_Tours
 {
     public:
@@ -37,7 +35,6 @@ class cmp_Tours
        return false;
     }
 };
-
 
 //Check if file exists. Returns 0 in case it does and 1 in case it doesnt
 int checkFileConsistency(FILE *fp)
@@ -70,7 +67,6 @@ void buildCity(FILE* fp)
     for (int i = 0; i < NUMBER_ROWS; i++) 
     {
         fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
-        
 
             // std::cout << "Cities: " << city1 << " <-> " << city2 << std::endl;
             // std::cout << "Cost " << edgeCost << std::endl;
@@ -79,14 +75,12 @@ void buildCity(FILE* fp)
         cities[city2].addNeighbour(city1, edgeCost);
     }
     // std::cout << "All Cities Built!!!" << std::endl;
-
 }
 
 // Retrieves the data from the input file and stores it in the aproppriate variables
 void getMapData(char* filename)
 {      
     FILE* fp = fopen(filename, "r");
-
     if ( checkFileConsistency(fp) ) 
     {
         printf("Error: Unable to open file '%s'\n", filename);
@@ -123,20 +117,60 @@ Tour tsp(char* filename, double maxTourCost)
     double recomputedLowerBound;
 
     bestTour = Tour( NA_VALUE, maxTourCost, NA_VALUE, City(-1,-1));
-    // bestTour.toString();
-
     PriorityQueue<Tour, cmp_Tours> journey;
-
     std::cout << "----------------------" << std::endl;
-
-    journey.push(Tour(NUM_CITIES, 0, initialLowerBound, City(0, NUM_CITIES)));
-
+    journey.push(Tour(NUM_CITIES, 0, initialLowerBound, cities[0]));
     int s = journey.size();
     
-    
-    std::cout << recomputeLowerBound(18, 5, cities[0], cities[3]) << std::endl;
-    std::cout << recomputeLowerBound(18, 7, cities[3], cities[2]) << std::endl;
-    std::cout << recomputeLowerBound(19, 11, cities[2], cities[1]) << std::endl;
+
+    int* aaa;
+    Tour currTour;
+   
+    currTour = journey.pop();
+    currTour.toString();
+
+
+    int n = 0;
+    // std::cout << "ada" << n << std::endl;
+    // currTour.t(&n);
+    // std::cout << "ada" << n << std::endl;
+
+    aaa = currTour.getUnvisitedCities(&n);
+    std::cout << "NUMBER -> " << n << std::endl;
+    for ( int i = 0 ; i < n ; i++ )
+    {
+        std::cout << aaa[i] << std::endl;
+    }
+    std::cout << "-------------------------" << std::endl;
+
+    currTour.addCity(cities[2], 34, 56);
+    currTour.toString();
+    aaa = currTour.getUnvisitedCities(&n);
+    std::cout << "NUMBER -> " << n << std::endl;
+    for ( int i = 0 ; i < n; i++ )
+    {
+        std::cout << aaa[i] << std::endl;
+    }
+    std::cout << "-------------------------" << std::endl;
+
+    currTour.addCity(cities[3], 2, 26);
+    currTour.toString();
+    aaa = currTour.getUnvisitedCities(&n);
+    std::cout << "NUMBER -> " << n << std::endl;
+    for ( int i = 0 ; i < n ; i++ )
+    {
+        std::cout << aaa[i] << std::endl;
+    }
+    std::cout << "-------------------------" << std::endl;
+
+
+
+
+
+
+
+
+
 
     // for ( int i = 0; i < s ; i++ )
     // {
@@ -145,7 +179,6 @@ Tour tsp(char* filename, double maxTourCost)
 
     // while ( journey.size() != 0 )
     // {
-        
     //     Tour currTour = journey.pop();
 
 
@@ -158,25 +191,31 @@ Tour tsp(char* filename, double maxTourCost)
     //         if ( //currTour.connectsToBase() &&
     //             ( currTour.getCost() + currTour.getRoadCostTo(0) < bestTour.getCost() ))
     //         {
-    //             bestTour.addCity(City(0, NA_VALUE), currTour.getRoadCostTo(0));
+    //             double roadCostToZero = currTour.getRoadCostTo(0);
+    //             bestTour.addCity(cities[0], roadCostToZero, recomputeLowerBound(currTour.getBound(), roadCostToZero, currTour.getCurrCity(), cities[0]));
     //         }
     //     }
     //     else
     //     {
-    //         // get Unvisited Neighbours
-    //         //
-
+    //         int* unvisitedNeighbours = currTour.getUnvisitedCities();
+    //         int unvNeiNumber = currTour.getCurrCity().getNrNeighbours();
+    //         for ( int i = 0 ; i < unvNeiNumber ; i++ )
+    //         {
+    //             recomputedLowerBound = recomputeLowerBound();
+    //             if ( recomputedLowerBound > bestTour.getCost() )
+    //             {
+    //                 continue;
+    //             }
+    //             short roadCost = currTour.getCurrCity().getRoadCost(unvisitedNeighbours[i]);
+    //             journey.push();
+    //         }
+    //         free(unvisitedNeighbours);
     //     }
-        
-    //     // delete &currTour;
     //     currTour.~Tour();
-
     // }
-
     std::cout << "FIM" << std::endl;
     return bestTour;
 }
-
 
 // main
 int main(int argc, char *argv[]) 

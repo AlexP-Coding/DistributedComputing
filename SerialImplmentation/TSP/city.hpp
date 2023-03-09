@@ -2,6 +2,7 @@
 #include <vector>
 
 //TODO verificar vizinhos atraves de custos para poupar acessos a memoria
+//TODO verificar se quando os arrays sao formados, ao ler do ficheiro, as cidades ja estam por ordem
 
 #ifndef CITY_HPP
 #define CITY_HPP
@@ -42,7 +43,7 @@ class City {
         {
             neighbours.push_back(neighbourId);
             costs.push_back(edgeCost);
-            printf("Neighbor added: id %d cost %lf\n", neighbours[nrNeighbours], costs[nrNeighbours]);
+            // printf("Neighbor added: id %d cost %lf\n", neighbours[nrNeighbours], costs[nrNeighbours]);
             nrNeighbours++;
             updateLowestCostEdges(edgeCost);
         }
