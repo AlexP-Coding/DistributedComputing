@@ -77,7 +77,7 @@ class Tour {
 
         double getRoadCostTo(int newCity)
         {
-            return this->currCity.getRoadCost(newCity);
+            return this->currCity.getCosts()[newCity];
         }
 
         void addCost(double newCost)
@@ -122,6 +122,11 @@ class Tour {
         void increaseSize()
         {
             this->size++;
+        }
+
+        void setSize(int newSize)
+        {
+            this->size = newSize;
         }
 
         int getSize()
