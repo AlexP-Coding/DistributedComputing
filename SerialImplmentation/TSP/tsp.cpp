@@ -162,6 +162,7 @@ Tour tsp(char* filename, double maxTourCost)
             int* unvisitedNeighbours = currTour.getUnvisitedCities(&unvNeiNumber);
             for ( int i = 0 ; i < unvNeiNumber ; i++ )
             {
+                std::cout << "//////////////////////" << unvisitedNeighbours[i] << std::endl;
                 recomputedLowerBound = recomputeLowerBound(
                     currTour.getBound(),
                     currTour.getRoadCostTo(unvisitedNeighbours[i]),
