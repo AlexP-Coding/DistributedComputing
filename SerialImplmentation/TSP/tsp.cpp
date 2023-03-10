@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
     // exec_time += omp_get_wtime();
     // fprintf(stderr, "%.1fs\n", exec_time);
 
-    if ( resultTour.getCost() != NA_VALUE ){
+    if ( resultTour.getSize() > 2 ){
         std::cout << resultTour.getCost() << std::endl;
         resultTour.printTour();
     }else
