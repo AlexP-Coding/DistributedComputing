@@ -16,7 +16,7 @@ class Tour {
     public:
         Tour(){}
 
-        // Constructor of class City
+        // Constructor of class Tour
         Tour(double cost, double bound, City currCity)
         {   
             this->tour.push_back(currCity.getId());
@@ -26,10 +26,11 @@ class Tour {
             this->currCity = currCity;
         }
 
-        // Deconstructor of class City
+        // Deconstructor of class Tour
         ~Tour()
         {
-            this->tour.clear();
+            std::vector<int> tempVector;
+            this->tour.swap(tempVector);
         }
 
         // Adds a city to this tour
