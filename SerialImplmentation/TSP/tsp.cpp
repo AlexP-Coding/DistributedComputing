@@ -32,7 +32,8 @@ class cmp_Tours
        {
            return true;
        }
-       else if ( tour_a.getBound() == tour_b.getBound() && tour_a.getCurrCity().getId() > tour_b.getCurrCity().getId() )   
+       else if ( tour_a.getBound() == tour_b.getBound() && 
+       tour_a.getCurrCity().getId() > tour_b.getCurrCity().getId() )   
        {
            return true;
        }
@@ -55,7 +56,7 @@ void createCities()
     cities = new City[NUM_CITIES];
     for (int i = 0 ; i < NUM_CITIES ; i++ )
     {
-        cities[i] = *new City(i, NUM_CITIES);
+        cities[i].setCity(i, NUM_CITIES);
     }
 }
 
@@ -147,6 +148,8 @@ Tour tsp(double maxTourCost)
     while ( journey.size() > 0 )
     {
         Tour currTour = journey.pop();
+        currTour.toString();
+        printf("--------------------------------------\n");
 
         if ( currTour.getBound() >= bestTour.getCost() )
         {
@@ -212,7 +215,7 @@ int main(int argc, char *argv[])
     if ( resultTour.getSize() > 2 ){
         std::cout << resultTour.getCost() << std::endl;
         resultTour.printTour();
-    }else
+    } else
     {
         std::cout << "NO SOLUTION" << std::endl;
     }

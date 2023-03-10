@@ -14,7 +14,7 @@ class City {
         int maxNeighbours;
         std::vector<int> neighbours;
         std::vector<double> costs;
-        double* lowestCostEdges;
+        double lowestCostEdges[2];
         int connectsToStart;
 
     public:
@@ -25,7 +25,6 @@ class City {
         {
             id = city_id;
             maxNeighbours = numCities-1;
-            lowestCostEdges = new double[2];
             lowestCostEdges[0] = 1000000.0;
             lowestCostEdges[1] = 1000000.0;
             nrNeighbours=0;
@@ -38,6 +37,17 @@ class City {
             neighbours.clear();
             costs.clear();
         }
+
+        void setCity(int city_id, int numCities)
+        {
+            id = city_id;
+            maxNeighbours = numCities-1;
+            lowestCostEdges[0] = 1000000.0;
+            lowestCostEdges[1] = 1000000.0;
+            nrNeighbours=0;
+            connectsToStart = 0;
+        }
+
 
 
         // Adds a neighbour to the 'neighbours' array and a cost at the same position on to the 'costs' array
@@ -90,7 +100,7 @@ class City {
             return ( lowestCostEdges[0] + lowestCostEdges[1] ) ;
         }
 
-        // Returns the highst cost edge of the two lowest ones
+        // Returns the highest cost edge of the two lowest ones
         double getHigherLowerTruncatedCostEdge(double roadCost)
         {
             double edge = -1;
@@ -155,13 +165,8 @@ class City {
         std::vector<double> getCosts() const {
             return costs;
         }
-    
-        // Setter and getter functions for highestCostEdges
-        void setHighestCostEdges(double* city_highestCostEdges) {
-            lowestCostEdges = city_highestCostEdges;
-        }
 
-        double* getLowestCostEdges() const {
+        double* getLowestCostEdges() {
             return lowestCostEdges;
         }
         
