@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <bitset>
-#include"city.hpp"
+#include "city.hpp"
 
 #ifndef TOUR_HPP
 #define TOUR_HPP
@@ -75,6 +75,15 @@ class Tour {
 
 
         // Getters and Setters
+
+        void setTour(double cost, double bound, City *currCity, std::bitset<128>& citiesVisited) {
+            this->tourPath.push_back(currCity->getId());
+            this->bound = bound;
+            this->cost = cost;
+            this->size = 1;
+            this->currCity = currCity;
+            this->citiesVisited = citiesVisited;
+        }
 
         void setTourPath(std::vector<int> tourPath) {
             this->tourPath = tourPath;

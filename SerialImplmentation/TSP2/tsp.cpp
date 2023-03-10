@@ -11,29 +11,33 @@
 #include "./nqueue/queue.hpp"
 #include "city.hpp"
 #include "tour.hpp"
+#include "tsp.hpp"
+
 #define NA_VALUE -1
 
 int NUM_ROADS = 0;
 int NUM_CITIES = 0;
 City* cities;
-Tour bestTour;
+//Tour* bestTour;
 
+/*
 // Class stores the compare function for the priority queue
 class cmp_Tours
 {
     public:
-    bool operator()(Tour& tour_a, Tour& tour_b) {
-       if ( tour_a.getBound() > tour_b.getBound() )
+    bool operator()(Tour* tour_a, Tour* tour_b) {
+       if ( tour_a->getBound() > tour_b->getBound() )
        {
            return true;
        }
-       else if ( tour_a.getBound() == tour_b.getBound() && tour_a.getCurrCity()->getId() > tour_b.getCurrCity()->getId() )   
+       else if ( tour_a->getBound() == tour_b->getBound() && tour_a->getCurrCity()->getId() > tour_b->getCurrCity()->getId() )   
        {
            return true;
        }
        return false;
     }
 };
+*/
 
 
 int main(int argc, char *argv[]) {
@@ -49,18 +53,20 @@ int main(int argc, char *argv[]) {
 
     exec_time = -omp_get_wtime();
 
-    Tour resultTour = tsp(atof(argv[2]));
+    //Tour* resultTour = tsp(atof(argv[2]));
 
     exec_time += omp_get_wtime();
     fprintf(stderr, "%.1fs\n", exec_time);
 
-    if ( resultTour.getSize() > 2 ){
-        std::cout << resultTour.getCost() << std::endl;
-        resultTour.printTourPath();
+/*
+    if ( resultTour->getSize() > 2 ){
+        std::cout << resultTour->getCost() << std::endl;
+        resultTour->printTourPath();
     } else
     {
         std::cout << "NO SOLUTION" << std::endl;
     }
+*/
     exit(0);
 }
 
@@ -76,61 +82,66 @@ void getMapData(char* filename)
     fclose(fp);
 }
 
-Tour tsp(double maxTourCost)
+/*
+Tour* tsp(double maxTourCost)
 {
     double initialLowerBound = computeInitialLowerBound();
     double recomputedLowerBound;
 
     std::bitset<128> noVisits;
-    bestTour = Tour(maxTourCost, NA_VALUE, City(-1,-1), noVisits);
-    PriorityQueue<Tour, cmp_Tours> journey;
-    journey.push(Tour(0, initialLowerBound, cities[0], noVisits));
+    bestTour = (Tour*) malloc(sizeof(Tour));
+    bestTour->setTour(maxTourCost, NA_VALUE, nullptr, noVisits);
+    PriorityQueue<Tour*, cmp_Tours> journey;
+
+    Tour* newTour = (Tour*) malloc(sizeof(Tour));
+    newTour->setTour(0, initialLowerBound, &cities[0], noVisits);
+    journey.push(newTour);
 
     while ( journey.size() > 0 )
     {
-        Tour currTour = journey.pop();
+        Tour *currTour = journey.pop();
 
-        if ( currTour.getBound() >= bestTour.getCost() )
+        if (currTour->getBound() >= bestTour->getCost() )
         {
             return bestTour;
         }
-        if( currTour.getSize() == NUM_CITIES )
+        if( currTour->getSize() == NUM_CITIES )
         {
-            if ( currTour.getCurrCity().getConnectsToStart() == 1 &&
-                ( currTour.getCost() + currTour.getRoadCostTo(0) < bestTour.getCost() ))
+            if ( currTour->getCurrCity()->getConnectsToStart() == 1 &&
+                ( currTour->getCost() + currTour->getRoadCostTo(0) < bestTour->getCost() ))
             {
-                double roadCostToZero = currTour.getRoadCostTo(0);
-                bestTour = getNewTour(currTour, cities[0], roadCostToZero, currTour.getBound());
+                double roadCostToZero = currTour->getRoadCostTo(0);
+                bestTour = getNewTour(currTour, &cities[0], roadCostToZero, currTour->getBound());
             }
         }
         else
         {
             int unvNeiNumber;
-            int* unvisitedNeighbours = currTour.getUnvisitedCities(&unvNeiNumber);
+            int* unvisitedNeighbours = currTour->getUnvisitedCities(&unvNeiNumber);
             for ( int i = 0 ; i < unvNeiNumber ; i++ )
             {
                 recomputedLowerBound = recomputeLowerBound(
-                    currTour.getBound(),
-                    currTour.getRoadCostTo(cities[unvisitedNeighbours[i]].getId()),
-                    currTour.getCurrCity(),
-                    cities[unvisitedNeighbours[i]]
+                    currTour->getBound(),
+                    currTour->getRoadCostTo(cities[unvisitedNeighbours[i]].getId()),
+                    currTour->getCurrCity(),
+                    &cities[unvisitedNeighbours[i]]
                 );
-                if ( recomputedLowerBound > bestTour.getCost() )
+                if ( recomputedLowerBound > bestTour->getCost() )
                 {
                     continue;
                 }
-                double roadCost = currTour.getRoadCostTo(cities[unvisitedNeighbours[i]].getId());
-                journey.push(getNewTour(currTour, cities[unvisitedNeighbours[i]], roadCost, recomputedLowerBound));
+                double roadCost = currTour->getRoadCostTo(cities[unvisitedNeighbours[i]].getId());
+                journey.push(getNewTour(currTour, &cities[unvisitedNeighbours[i]], roadCost, recomputedLowerBound));
             }
             free(unvisitedNeighbours);
         }
         // TODO: FALTA CONSEGUIR libertar a memoria da tour que vamos deixar de usar!!!!
-        // currTour.~Tour();
+        // currTour->~Tour();
     }
     std::cout << "FIM" << std::endl;
     return bestTour;
 }
-
+*/
 
 void buildMap(FILE *fp) {
     int valuesRead;
@@ -162,11 +173,18 @@ void buildMap(FILE *fp) {
 }
 
 void initCities() {
-    cities = (City*) malloc(sizeof(City)*NUM_CITIES);
+    cities = new City[NUM_CITIES];
     for (int i = 0 ; i < NUM_CITIES ; i++ )
     {
-        cities[i] = City(i, NUM_CITIES);
+        cities[i].setCity(i, NUM_CITIES);
     }
+}
+
+void freeCities() {
+    for (int i = NUM_CITIES-1; i >= 0; i--) {
+        cities[i].~City();
+    }
+    free(cities);
 }
 
 
@@ -188,7 +206,7 @@ double recomputeLowerBound(double oldLowerBound, double roadCost, City *oldCity,
 }
 
 // Returns a new tour based on the Tour given as an arguement and updates its attributes with the other arguments
-Tour* getNewTour(Tour *oldTour, City* newCity,double roadCost, double newBound)
+Tour* getNewTour(Tour *oldTour, City* newCity, double roadCost, double newBound)
 {
     Tour* newTour = (Tour*) malloc(sizeof(Tour));
 

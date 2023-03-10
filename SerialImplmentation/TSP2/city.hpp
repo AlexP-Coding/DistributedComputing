@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cfloat>
 
 #ifndef CITY_HPP
 #define CITY_HPP
@@ -14,17 +15,20 @@ class City {
         double* lowestCostEdges;
 
     public:
+
+        City() {}
+
         City(int id, int nrCities) {
             this->id = id;
             this->nrNeighbours = 0;
             this->maxNeighbours = nrCities-1;
             this->connectsToStart = false;
             this->lowestCostEdges = (double*) malloc(sizeof(double)*nrCities);
-            this->lowestCostEdges[0] = 1000000.00;
-            this->lowestCostEdges[1] = 1000000.00;
+            this->lowestCostEdges[0] = DBL_MAX;
+            this->lowestCostEdges[1] = DBL_MAX;
             this->costs = (double*) malloc(sizeof(double)*nrCities); 
 
-            for (int i = 0; 0 < maxNeighbours; i++) {
+            for (int i = 0; i < maxNeighbours; i++) {
                 costs[i] = -1.0;
             }
         };
@@ -48,6 +52,21 @@ class City {
                 connectsToStart = true;
             }
         } 
+
+        void setCity(int id, int nrCities) {
+            this->id = id;
+            this->nrNeighbours = 0;
+            this->maxNeighbours = nrCities-1;
+            this->connectsToStart = false;
+            this->lowestCostEdges = (double*) malloc(sizeof(double)*nrCities);
+            this->lowestCostEdges[0] = DBL_MAX;
+            this->lowestCostEdges[1] = DBL_MAX;
+            this->costs = (double*) malloc(sizeof(double)*nrCities); 
+
+            for (int i = 0; i < maxNeighbours; i++) {
+                costs[i] = -1.0;
+            }
+        }
 
         // Returns the road cost between this city and the city specified by the 'neighbourId' argument
         double getEdgeCost(int neighbourId) {
