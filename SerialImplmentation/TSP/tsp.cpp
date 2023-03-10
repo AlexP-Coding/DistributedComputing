@@ -5,7 +5,9 @@
 #include <string>
 #include <iostream>
 #include <vector>
-// #include <omp.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <omp.h>
 #include"./nqueue/queue.hpp"
 #include"city.hpp"
 #include"tour.hpp"
@@ -191,16 +193,21 @@ Tour tsp(double maxTourCost)
 // main
 int main(int argc, char *argv[]) 
 {
+    if (argc != 3) {
+        printf("Received %d arguments instead of 3.\n", argc);
+        exit(1);
+    }
+
     double exec_time;
 
     getMapData(argv[1]);
 
-    // exec_time = -omp_get_wtime();
+    exec_time = -omp_get_wtime();
 
     Tour resultTour = tsp(atof(argv[2]));
 
-    // exec_time += omp_get_wtime();
-    // fprintf(stderr, "%.1fs\n", exec_time);
+    exec_time += omp_get_wtime();
+    fprintf(stderr, "%.1fs\n", exec_time);
 
     if ( resultTour.getSize() > 2 ){
         std::cout << resultTour.getCost() << std::endl;

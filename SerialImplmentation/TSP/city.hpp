@@ -174,9 +174,9 @@ class City {
             }
             printf("], costs=[");
             for (int i = 0; i < maxNeighbours; i++) {
-                printf("%lf, ", costs[i]);
+                printf("%f, ", costs[i]);
             }
-            printf("], highestCostEdges=[%lf, %lf])\n", lowestCostEdges[0], lowestCostEdges[1]);
+            printf("], highestCostEdges=[%f, %f])\n", lowestCostEdges[0], lowestCostEdges[1]);
             return;
         }
 };

@@ -1,8 +1,8 @@
 # valgrind --trace-children=yes --track-fds=yes --track-origins=yes --leak-check=full --show-leak-kinds=all --show-below-main=yes ./tsp pub-instances/teste1.in 40
-CPDFLAGS = -O3 -fopenmp -std=c++11
+CPDFLAGS = -std=c++11 -O3 -fopenmp
 EXTRA = -Wall -Wextra -ansi -pedantic -fsanitize=address
 CPDEXTRA = $(CPDFLAGS) $(EXTRA)
-TRAVASSOS = -O3 -std=c++11
+TRAVASSOS = -std=c++11 -O3
 TRAVASSOSEXTRA = $(TRAVASSOS) $(EXTRA)
 
 all: tsp.cpp
