@@ -35,11 +35,8 @@ class City {
         // Deconstructor of class City
         ~City()
         {
-            std::vector<int> tempVectorInt;
-            neighbours.swap(tempVectorInt);
-
-            std::vector<double> tempVectorDouble;
-            costs.swap(tempVectorDouble);
+            neighbours.clear();
+            costs.clear();
         }
 
 

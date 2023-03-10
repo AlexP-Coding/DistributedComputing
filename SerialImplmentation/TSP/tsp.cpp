@@ -80,7 +80,6 @@ void buildCity(FILE* fp)
         valuesRead = fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
         if (valuesRead != 3) {
             printf("Error: Read %d values instead of 3.\n", valuesRead);
-            fclose(fp);
             exit(1);
         }
 
@@ -183,7 +182,8 @@ Tour tsp(double maxTourCost)
             }
             free(unvisitedNeighbours);
         }
-        currTour.~Tour();
+        // TODO: FALTA CONSEGUIR libertar a memoria da tour que vamos deixar de usar!!!!
+        // currTour.~Tour();
     }
 
     std::cout << "FIM" << std::endl;
@@ -208,11 +208,6 @@ int main(int argc, char *argv[])
 
     exec_time += omp_get_wtime();
     fprintf(stderr, "%.1fs\n", exec_time);
-
-    for (int i = 0; i < NUM_CITIES; i++) {
-        cities[i].~City();
-        free(cities);
-    }
 
     if ( resultTour.getSize() > 2 ){
         std::cout << resultTour.getCost() << std::endl;

@@ -1,0 +1,24 @@
+ex1-20           0
+ex2.40           0
+gen10-20         0
+gen15-25         2.3
+gen19-23        38.3s
+gen20-5000      
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+gen22-25000
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+Aborted (core dumped)
+gen24-50000
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+Aborted (core dumped)
+gen26-50000
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+Aborted (core dumped)
+gen30-50000
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+Aborted (core dumped)
