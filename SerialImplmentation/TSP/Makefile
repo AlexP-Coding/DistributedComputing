@@ -5,10 +5,7 @@ CPDFLAGS = -O3 -fopenmp
 CPDEXTRA = $(CPDFLAGS) -Wall -Wextra -ansi -pedantic -fsanitize=address -std=gnu99 -ggdb3 -g
 
 all: tsp.cpp
-	g++ tsp.cpp -o tsp
-
-full: tsp.cpp city.cpp
-	g++ $(CPDFLAGS) tsp.cpp city.cpp -o tsp
+	g++ $(CPDFLAGS) tsp.cpp -o tsp
 
 extra: tsp.cpp city.cpp
 	g++ $(CPDEXTRA) tsp.cpp city.cpp -o tsp

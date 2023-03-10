@@ -60,7 +60,14 @@ void createCities()
 // Fills the data of the cities in the cities array
 void buildCity(FILE* fp)
 {
-    fscanf(fp, "%d %d", &NUM_CITIES, &NUMBER_ROWS);
+    int valuesRead;
+
+    valuesRead = fscanf(fp, "%d %d", &NUM_CITIES, &NUMBER_ROWS);
+    if (valuesRead != 2) {
+        printf("Error: Read %d values instead of 2.\n", valuesRead);
+        exit(1);
+    }
+
     createCities();
 
     int city1, city2;
@@ -68,7 +75,11 @@ void buildCity(FILE* fp)
 
     for (int i = 0; i < NUMBER_ROWS; i++) 
     {
-        fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
+        valuesRead = fscanf(fp, "%d %d %lf", &city1, &city2, &edgeCost);
+        if (valuesRead != 3) {
+            printf("Error: Read %d values instead of 3.\n", valuesRead);
+            exit(1);
+        }
 
         cities[city1].addNeighbour(city2, edgeCost);
         cities[city2].addNeighbour(city1, edgeCost);
