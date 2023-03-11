@@ -18,9 +18,8 @@
 int NUM_ROADS = 0;
 int NUM_CITIES = 0;
 City* cities;
-//Tour* bestTour;
+Tour* bestTour;
 
-/*
 // Class stores the compare function for the priority queue
 class cmp_Tours
 {
@@ -37,7 +36,6 @@ class cmp_Tours
        return false;
     }
 };
-*/
 
 
 int main(int argc, char *argv[]) {
@@ -53,12 +51,12 @@ int main(int argc, char *argv[]) {
 
     exec_time = -omp_get_wtime();
 
-    //Tour* resultTour = tsp(atof(argv[2]));
+    Tour* resultTour = tsp(atof(argv[2]));
 
     exec_time += omp_get_wtime();
     fprintf(stderr, "%.1fs\n", exec_time);
 
-/*
+
     if ( resultTour->getSize() > 2 ){
         std::cout << resultTour->getCost() << std::endl;
         resultTour->printTourPath();
@@ -66,7 +64,9 @@ int main(int argc, char *argv[]) {
     {
         std::cout << "NO SOLUTION" << std::endl;
     }
-*/
+
+    freeCities();
+
     exit(0);
 }
 
@@ -82,66 +82,71 @@ void getMapData(char* filename)
     fclose(fp);
 }
 
-/*
+
 Tour* tsp(double maxTourCost)
 {
     double initialLowerBound = computeInitialLowerBound();
     double recomputedLowerBound;
+    double bestTourCost;
 
-    std::bitset<128> noVisits;
-    bestTour = (Tour*) malloc(sizeof(Tour));
-    bestTour->setTour(maxTourCost, NA_VALUE, nullptr, noVisits);
+    std::bitset<128> citiesVisited;
+
+    Tour *bestTour = (Tour*) malloc(sizeof(Tour));
+    bestTour->setTour(0, DBL_MAX, &cities[0], citiesVisited);
+
+    citiesVisited[0] = true;
+    Tour* tour = (Tour*) malloc(sizeof(Tour));
+    tour->setTour(0, initialLowerBound, &cities[0], citiesVisited);
+
     PriorityQueue<Tour*, cmp_Tours> journey;
+    journey.push(tour);
 
-    Tour* newTour = (Tour*) malloc(sizeof(Tour));
-    newTour->setTour(0, initialLowerBound, &cities[0], noVisits);
-    journey.push(newTour);
-
-    while ( journey.size() > 0 )
+    while (!journey.empty())
     {
-        Tour *currTour = journey.pop();
+        Tour* tourNode = journey.pop();
 
-        if (currTour->getBound() >= bestTour->getCost() )
-        {
+        if (tourNode->getBound() >= bestTour->getCost()) {
             return bestTour;
         }
-        if( currTour->getSize() == NUM_CITIES )
-        {
-            if ( currTour->getCurrCity()->getConnectsToStart() == 1 &&
-                ( currTour->getCost() + currTour->getRoadCostTo(0) < bestTour->getCost() ))
-            {
-                double roadCostToZero = currTour->getRoadCostTo(0);
-                bestTour = getNewTour(currTour, &cities[0], roadCostToZero, currTour->getBound());
+
+        if (bestTour->getSize() == NUM_CITIES) {
+            double distToZero = bestTour->getCurrCity()->getEdgeCost(0);
+            double fullCost = bestTour->getCost() + distToZero;
+
+            if (distToZero > 0 && fullCost < bestTourCost) {
+                Tour* newBestTour = (Tour*) malloc(sizeof(Tour));
+                newBestTour->setTour(0, initialLowerBound, &cities[0], citiesVisited);
+                newBestTour->addCity(&cities[0], distToZero, tourNode->getBound());
+                Tour *oldBestTour = bestTour;
+                bestTour = newBestTour;
+                free(oldBestTour);
             }
         }
-        else
-        {
-            int unvNeiNumber;
-            int* unvisitedNeighbours = currTour->getUnvisitedCities(&unvNeiNumber);
-            for ( int i = 0 ; i < unvNeiNumber ; i++ )
-            {
+        else {
+            int nrUnvisitedNeighbours;
+            int *unvisitedNeighbours = tourNode->getUnvisitedCities(&nrUnvisitedNeighbours);
+
+            for (int i = 0; i < nrUnvisitedNeighbours; i++) {
                 recomputedLowerBound = recomputeLowerBound(
-                    currTour->getBound(),
-                    currTour->getRoadCostTo(cities[unvisitedNeighbours[i]].getId()),
-                    currTour->getCurrCity(),
+                    recomputedLowerBound,
+                    tourNode->getRoadCostTo(unvisitedNeighbours[i]),
+                    tourNode->getCurrCity(), 
                     &cities[unvisitedNeighbours[i]]
                 );
-                if ( recomputedLowerBound > bestTour->getCost() )
-                {
+
+                if (recomputedLowerBound > bestTour->getCost()) {
                     continue;
                 }
-                double roadCost = currTour->getRoadCostTo(cities[unvisitedNeighbours[i]].getId());
-                journey.push(getNewTour(currTour, &cities[unvisitedNeighbours[i]], roadCost, recomputedLowerBound));
+                
+                double newCost = tourNode->getCost() + tourNode->getRoadCostTo(i);
+                Tour *newTour = tourNode->getNextTourNode(&cities[unvisitedNeighbours[i]], newCost, recomputedLowerBound);
+                journey.push(newTour);
             }
-            free(unvisitedNeighbours);
         }
-        // TODO: FALTA CONSEGUIR libertar a memoria da tour que vamos deixar de usar!!!!
-        // currTour->~Tour();
     }
-    std::cout << "FIM" << std::endl;
     return bestTour;
 }
-*/
+
 
 void buildMap(FILE *fp) {
     int valuesRead;
@@ -194,19 +199,22 @@ double computeInitialLowerBound()
     double lowerBound = 0;
     for ( int i = 0 ; i < NUM_CITIES  ; i++ )
     {
-        lowerBound = lowerBound + cities[i].getLowestCostEdgesSum();
+        lowerBound += cities[i].getLowestCostEdgesSum();
     }
-    return ( lowerBound / 2);
+    return ( (double) lowerBound / 2);
 }
 
 // Recomputes the LowerBound to new Tour
-double recomputeLowerBound(double oldLowerBound, double roadCost, City *oldCity, City *newCity)
+double recomputeLowerBound(double oldLowerBound, double roadCost, City* oldCity, City* newCity)
 {  
-    return (oldLowerBound + roadCost - ( oldCity->getHigherLowerTruncatedCostEdge(roadCost) + newCity->getHigherLowerTruncatedCostEdge(roadCost)) / 2 );
+    double cf = oldCity->getHigherLowerTruncatedCostEdge(roadCost);
+    double ct = newCity->getHigherLowerTruncatedCostEdge(roadCost);
+    double res = oldLowerBound + roadCost - ( cf + ct ) / 2;
+    return res;
 }
 
 // Returns a new tour based on the Tour given as an arguement and updates its attributes with the other arguments
-Tour* getNewTour(Tour *oldTour, City* newCity, double roadCost, double newBound)
+Tour* getNewTour(Tour* oldTour, City* newCity, double roadCost, double newBound)
 {
     Tour* newTour = (Tour*) malloc(sizeof(Tour));
 

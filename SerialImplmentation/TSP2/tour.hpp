@@ -40,7 +40,7 @@ class Tour {
             this->setCurrCity(newCity);
             this->incrementTourSize();
             this->setBound(newBound);
-           // ? this->visitCity(newCity->getId());
+            this->visitCity(newCity->getId());
         }
 
         // Returns the neighbours of a city that have not been traversed yet
@@ -73,6 +73,10 @@ class Tour {
             this->setCost(this->getCost() + newCost);
         } 
 
+        void visitCity(int cityId) {
+            this->citiesVisited[cityId] = true;
+        }
+
 
         // Getters and Setters
 
@@ -83,6 +87,23 @@ class Tour {
             this->size = 1;
             this->currCity = currCity;
             this->citiesVisited = citiesVisited;
+            if (currCity)
+                this->citiesVisited[currCity->getId()] = true;
+        }
+
+        Tour* getNextTourNode(City *newCity, double cost, double newBound) {
+            
+            Tour* newTour = (Tour*) malloc(sizeof(Tour));
+
+            newTour->setSize(this->getSize());
+            newTour->setCost(this->getCost());
+            newTour->setBound(newBound);
+
+            newTour->setTourPath(this->getTourPath());
+            newTour->citiesVisited = this->citiesVisited;
+            newTour->addCity(newCity, cost, newBound);
+            
+            return newTour;
         }
 
         void setTourPath(std::vector<int> tourPath) {
@@ -109,6 +130,7 @@ class Tour {
         {
             this->cost = newCost;
         }
+        
         double getCost()
         {
             return this->cost;
